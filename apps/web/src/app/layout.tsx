@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "@/components/layout/Providers";
 
 export const metadata: Metadata = {
   title: "Nano Workshop Agent",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

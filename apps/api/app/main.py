@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import agent_runs, assets, health, projects, templates
 from app.core.config import settings
+from app.providers.mock import register_mock_providers
 from app.templates.loader import load_and_validate_templates
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: load and validate workshop templates
+    # Startup: load templates and register mock providers
     load_and_validate_templates()
+    register_mock_providers()
     yield
     # Shutdown
 

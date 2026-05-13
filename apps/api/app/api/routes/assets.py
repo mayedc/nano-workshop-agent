@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.schemas import AssetCreate, AssetResponse, AssetUpdate
 from app.services import asset as asset_service
+from app.services.preprocessing import preprocessing_service
 from app.services.storage import detect_file_type, generate_storage_key, get_storage
 from app.templates.loader import TemplateRegistry
 
@@ -93,6 +94,102 @@ async def upload_asset(
         processing_status="pending",
     )
     return await asset_service.create(db, obj_in=obj_in.model_dump())
+
+
+@router.post("/{asset_id}/process", response_model=dict[str, Any])
+async def process_asset(
+    asset_id: str,
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Trigger async processing of an asset."""
+    asset = await asset_service.get(db, asset_id)
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    if asset.processing_status == "in_progress":
+        raise HTTPException(status_code=409, detail="Asset is already being processed")
+
+    # Update status
+    await asset_service.update(
+        db,
+        db_obj=asset,
+        obj_in={"processing_status": "in_progress"},
+    )
+
+    # Trigger background task
+    from app.tasks import process_asset_task
+    task = process_asset_task.delay(asset_id, project_id)
+
+    return {
+        "asset_id": asset_id,
+        "task_id": task.id,
+        "status": "queued",
+    }
+
+
+@router.post("/{asset_id}/process-sync", response_model=dict[str, Any])
+async def process_asset_sync(
+    asset_id: str,
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Process an asset synchronously (for testing)."""
+    from app.schemas import EvidenceCreate
+    from app.services import evidence as evidence_service
+
+    asset = await asset_service.get(db, asset_id)
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    # Read file from storage
+    storage = get_storage()
+    file_bytes = storage.get_object(asset.storage_key)
+
+    # Process
+    result = await preprocessing_service.process_asset(
+        file_bytes=file_bytes,
+        filename=asset.filename,
+        mime_type=asset.mime_type,
+        asset_type=asset.asset_type,
+    )
+
+    # Create evidence records
+    evidence_ids: list[str] = []
+    for candidate in result.evidence_candidates:
+        ev = await evidence_service.create(
+            db,
+            obj_in=EvidenceCreate(
+                project_id=project_id,
+                asset_id=asset_id,
+                type=candidate["type"],
+                content=candidate["content"],
+                metadata=candidate.get("metadata", {}),
+            ).model_dump(),
+        )
+        evidence_ids.append(ev.id)
+
+    # Update asset status
+    await asset_service.update(
+        db,
+        db_obj=asset,
+        obj_in={
+            "processing_status": "completed",
+            "metadata": {
+                **(asset.metadata or {}),
+                "processing_result": result.to_dict(),
+                "evidence_ids": evidence_ids,
+            },
+        },
+    )
+
+    return {
+        "asset_id": asset_id,
+        "status": "completed",
+        "evidence_count": len(evidence_ids),
+        "evidence_ids": evidence_ids,
+        "result": result.to_dict(),
+    }
 
 
 @router.post("/", response_model=AssetResponse, status_code=status.HTTP_201_CREATED)

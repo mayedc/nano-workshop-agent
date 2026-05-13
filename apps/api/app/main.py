@@ -5,11 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import agent_runs, assets, health, projects, templates
 from app.core.config import settings
+from app.templates.loader import load_and_validate_templates
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
+    # Startup: load and validate workshop templates
+    load_and_validate_templates()
     yield
     # Shutdown
 

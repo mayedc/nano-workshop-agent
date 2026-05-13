@@ -1,0 +1,123 @@
+id: policy_stakeholder_workshop
+name: Policy Stakeholder Workshop
+description: Map stakeholders, detect consensus and conflict, and generate policy recommendations.
+
+input_roles:
+  - stakeholder_interviews
+  - policy_documents
+  - public_comments
+  - meeting_minutes
+  - position_papers
+  - media_coverage
+
+analysis_modules:
+  - stakeholder_mapping
+  - argument_mining
+  - consensus_detection
+  - conflict_detection
+  - policy_recommendation
+
+output_types:
+  - stakeholder_matrix
+  - policy_issue_map
+  - consensus_report
+  - recommendation_brief
+  - final_report
+
+ontology:
+  concepts:
+    - equity
+    - transparency
+    - accountability
+    - public_interest
+    - sustainability
+  relationships:
+    - transparency -> accountability
+    - equity -> public_interest
+    - sustainability -> public_interest
+  participant_groups:
+    - government
+    - industry
+    - civil_society
+    - academia
+    - public
+  need_categories:
+    - regulatory
+    - economic
+    - social
+    - environmental
+
+workflow_steps:
+  - id: 1
+    name: Upload Policy Materials
+    agent_name: AssetProcessor
+    status: pending
+    depends_on: []
+  - id: 2
+    name: Define Policy Scope
+    agent_name: GoalDesigner
+    status: pending
+    depends_on: [1]
+  - id: 3
+    name: Preprocess Documents
+    agent_name: Preprocessor
+    status: pending
+    depends_on: [1]
+  - id: 4
+    name: Stakeholder Mapping
+    agent_name: StakeholderMapper
+    status: pending
+    depends_on: [3]
+  - id: 5
+    name: Argument Mining
+    agent_name: ArgumentMiner
+    status: pending
+    depends_on: [3]
+  - id: 6
+    name: Consensus Detection
+    agent_name: ConsensusDetector
+    status: pending
+    depends_on: [5]
+  - id: 7
+    name: Conflict Detection
+    agent_name: ConflictDetector
+    status: pending
+    depends_on: [5]
+  - id: 8
+    name: Policy Recommendation
+    agent_name: PolicyRecommender
+    status: pending
+    depends_on: [6, 7]
+  - id: 9
+    name: Expert Review
+    agent_name: ReviewCoordinator
+    status: pending
+    depends_on: [8]
+  - id: 10
+    name: Export Policy Brief
+    agent_name: ExportAgent
+    status: pending
+    depends_on: [9]
+
+report_structure:
+  - title: Policy Context
+    type: text
+    source_steps: [2]
+  - title: Stakeholder Matrix
+    type: table
+    source_steps: [4]
+  - title: Arguments and Positions
+    type: chart
+    source_steps: [5]
+  - title: Areas of Consensus
+    type: text
+    source_steps: [6]
+  - title: Areas of Conflict
+    type: chart
+    source_steps: [7]
+  - title: Policy Recommendations
+    type: text
+    source_steps: [8]
+  - title: Implementation Brief
+    type: text
+    source_steps: [8]

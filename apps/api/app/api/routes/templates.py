@@ -8,6 +8,7 @@ from app.schemas import (
     WorkshopTemplateUpdate,
 )
 from app.services import template as template_service
+from app.templates.loader import TemplateRegistry
 
 router = APIRouter()
 
@@ -19,6 +20,32 @@ async def list_templates(
     db: AsyncSession = Depends(get_db),
 ):
     return await template_service.get_multi(db, skip=skip, limit=limit)
+
+
+@router.get("/dsl", response_model=list[dict])
+async def list_dsl_templates():
+    """List templates loaded from YAML DSL files."""
+    return [
+        {
+            "id": t.id,
+            "name": t.name,
+            "description": t.description,
+            "input_roles": t.input_roles,
+            "analysis_modules": t.analysis_modules,
+            "output_types": t.output_types,
+            "workflow_steps": [s.model_dump() for s in t.workflow_steps],
+        }
+        for t in TemplateRegistry.all()
+    ]
+
+
+@router.get("/dsl/{template_id}", response_model=dict)
+async def get_dsl_template(template_id: str):
+    """Get a specific template from YAML DSL files."""
+    template = TemplateRegistry.get(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail="DSL template not found")
+    return template.model_dump()
 
 
 @router.post("/", response_model=WorkshopTemplateResponse, status_code=status.HTTP_201_CREATED)

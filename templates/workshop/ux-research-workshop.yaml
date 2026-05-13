@@ -1,0 +1,121 @@
+id: ux_research_workshop
+name: UX Research Workshop
+description: Extract personas, pain points, and design opportunities from UX research sessions.
+
+input_roles:
+  - interview_recordings
+  - observation_notes
+  - survey_responses
+  - usability_test_videos
+  - diary_studies
+  - competitive_analysis
+
+analysis_modules:
+  - persona_extraction
+  - pain_point_analysis
+  - journey_mapping
+  - thematic_analysis
+  - opportunity_generation
+
+output_types:
+  - user_journey_map
+  - pain_point_matrix
+  - ux_insight_report
+  - design_opportunity_list
+  - persona_cards
+  - final_report
+
+ontology:
+  concepts:
+    - usability
+    - satisfaction
+    - efficiency
+    - learnability
+    - accessibility
+  relationships:
+    - usability -> satisfaction
+    - efficiency -> usability
+    - learnability -> usability
+  participant_groups:
+    - end_user
+    - power_user
+    - novice_user
+  need_categories:
+    - functionality
+    - usability
+    - delight
+
+workflow_steps:
+  - id: 1
+    name: Upload Research Materials
+    agent_name: AssetProcessor
+    status: pending
+    depends_on: []
+  - id: 2
+    name: Define Research Questions
+    agent_name: GoalDesigner
+    status: pending
+    depends_on: [1]
+  - id: 3
+    name: Preprocess Data
+    agent_name: Preprocessor
+    status: pending
+    depends_on: [1]
+  - id: 4
+    name: Persona Extraction
+    agent_name: PersonaExtractor
+    status: pending
+    depends_on: [3]
+  - id: 5
+    name: Pain Point Analysis
+    agent_name: PainPointAnalyzer
+    status: pending
+    depends_on: [3]
+  - id: 6
+    name: Journey Mapping
+    agent_name: JourneyMapper
+    status: pending
+    depends_on: [4, 5]
+  - id: 7
+    name: Thematic Analysis
+    agent_name: ThematicAnalyzer
+    status: pending
+    depends_on: [3]
+  - id: 8
+    name: Opportunity Generation
+    agent_name: OpportunityGenerator
+    status: pending
+    depends_on: [6, 7]
+  - id: 9
+    name: Expert Review
+    agent_name: ReviewCoordinator
+    status: pending
+    depends_on: [8]
+  - id: 10
+    name: Export Insights
+    agent_name: ExportAgent
+    status: pending
+    depends_on: [9]
+
+report_structure:
+  - title: Research Overview
+    type: text
+    source_steps: [2]
+  - title: User Personas
+    type: text
+    source_steps: [4]
+  - title: Pain Points
+    type: chart
+    source_steps: [5]
+  - title: User Journey Map
+    type: table
+    source_steps: [6]
+  - title: Key Themes
+    type: chart
+    source_steps: [7]
+  - title: Design Opportunities
+    type: text
+    source_steps: [8]
+  - title: Recommendations
+    type: text
+    source_steps: [8]

@@ -1,0 +1,138 @@
+id: ehmi_design_workshop
+name: eHMI Design Workshop
+description: Analyze road user needs and generate eHMI design guidelines for autonomous vehicles.
+
+input_roles:
+  - road_user_needs
+  - solution_sheets
+  - prototype_images
+  - brainstorming_notes
+  - discussion_recordings
+  - role_play_scripts
+  - questionnaire_results
+
+analysis_modules:
+  - qualitative_coding
+  - thematic_analysis
+  - questionnaire_statistics
+  - prototype_analysis
+  - design_guideline_generation
+
+output_types:
+  - insight_summary
+  - thematic_report
+  - requirement_matrix
+  - quantitative_charts
+  - design_guideline
+  - concept_designs
+  - final_report
+  - ppt
+
+ontology:
+  concepts:
+    - trust
+    - intention
+    - visibility
+    - cultural_context
+    - accessibility
+  relationships:
+    - trust -> intention
+    - visibility -> trust
+    - cultural_context -> trust
+    - accessibility -> visibility
+  participant_groups:
+    - pedestrian
+    - cyclist
+    - driver
+  need_categories:
+    - safety
+    - trust
+    - situational_awareness
+
+workflow_steps:
+  - id: 1
+    name: Upload Workshop Materials
+    agent_name: AssetProcessor
+    status: pending
+    depends_on: []
+  - id: 2
+    name: Define Research Goal
+    agent_name: GoalDesigner
+    status: pending
+    depends_on: [1]
+  - id: 3
+    name: Transcribe Audio/Video
+    agent_name: TranscriptionAgent
+    status: pending
+    depends_on: [1]
+  - id: 4
+    name: Extract Ontology
+    agent_name: OntologyExtractor
+    status: pending
+    depends_on: [3]
+  - id: 5
+    name: Qualitative Coding
+    agent_name: QualitativeCoder
+    status: pending
+    depends_on: [4]
+  - id: 6
+    name: Thematic Analysis
+    agent_name: ThematicAnalyzer
+    status: pending
+    depends_on: [5]
+  - id: 7
+    name: Questionnaire Statistics
+    agent_name: QuantitativeAnalyzer
+    status: pending
+    depends_on: [1]
+  - id: 8
+    name: Prototype Analysis
+    agent_name: PrototypeAnalyzer
+    status: pending
+    depends_on: [1]
+  - id: 9
+    name: Design Insight Generation
+    agent_name: DesignInsightAgent
+    status: pending
+    depends_on: [6, 7, 8]
+  - id: 10
+    name: Expert Review
+    agent_name: ReviewCoordinator
+    status: pending
+    depends_on: [9]
+  - id: 11
+    name: Concept Design Generation
+    agent_name: ConceptGenerator
+    status: pending
+    depends_on: [10]
+  - id: 12
+    name: Export Reports
+    agent_name: ExportAgent
+    status: pending
+    depends_on: [11]
+
+report_structure:
+  - title: Executive Summary
+    type: text
+    source_steps: [2]
+  - title: Methodology
+    type: text
+    source_steps: [1, 2]
+  - title: Thematic Analysis
+    type: chart
+    source_steps: [6]
+  - title: Quantitative Findings
+    type: table
+    source_steps: [7]
+  - title: Prototype Analysis
+    type: image
+    source_steps: [8]
+  - title: Design Insights
+    type: text
+    source_steps: [9]
+  - title: Concept Designs
+    type: image
+    source_steps: [11]
+  - title: Recommendations
+    type: text
+    source_steps: [9, 11]

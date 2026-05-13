@@ -125,10 +125,62 @@ class ReportGenerationAgent(BaseWorkshopAgent):
 
 
 def register_mock_agents(registry: Any) -> None:
-    from app.agents.registry import agent_registry
+    from app.agents.analysis_agents import (
+        CodingAgent,
+        QualitativeAnalysisAgent,
+        QuantitativeAnalysisAgent,
+        ThemeExtractionAgent,
+    )
+    from app.agents.core_agents import (
+        GoalUnderstandingAgent,
+        MaterialIntakeAgent,
+        MetadataFusionAgent,
+        PreprocessingAgent,
+        ProjectSetupAgent,
+        WorkshopPlanningAgent,
+    )
+    from app.agents.design_agents import (
+        DesignConceptAgent,
+        DesignInsightAgent,
+        PrototypeAnalysisAgent,
+    )
+    from app.agents.eval_agents import EvaluationAgent
+    from app.agents.realtime_agents import MCPConnectorAgent, MeetingRealtimeAgent
+    from app.agents.reporting_agents import (
+        ExpertReviewAgent,
+        ExportAgent,
+        IterationAgent,
+        ReportGenerationAgent,
+    )
 
+    # Core agents
+    registry.register(ProjectSetupAgent())
+    registry.register(MaterialIntakeAgent())
+    registry.register(PreprocessingAgent())
+    registry.register(MetadataFusionAgent())
     registry.register(GoalUnderstandingAgent())
+    registry.register(WorkshopPlanningAgent())
+
+    # Analysis agents
     registry.register(QualitativeAnalysisAgent())
+    registry.register(CodingAgent())
+    registry.register(ThemeExtractionAgent())
     registry.register(QuantitativeAnalysisAgent())
+
+    # Design agents
+    registry.register(PrototypeAnalysisAgent())
     registry.register(DesignInsightAgent())
+    registry.register(DesignConceptAgent())
+
+    # Reporting agents
+    registry.register(ExpertReviewAgent())
+    registry.register(IterationAgent())
     registry.register(ReportGenerationAgent())
+    registry.register(ExportAgent())
+
+    # Realtime agents
+    registry.register(MeetingRealtimeAgent())
+    registry.register(MCPConnectorAgent())
+
+    # Evaluation agents
+    registry.register(EvaluationAgent())

@@ -82,8 +82,12 @@ class ProjectResponse(ProjectBase):
 class AssetBase(BaseModel):
     filename: str
     mime_type: str
+    asset_type: str
     size: int = 0
     storage_key: str
+    semantic_role: str | None = None
+    source_stage: str | None = None
+    uploaded_by: str | None = None
     processing_status: str = "pending"
     metadata: dict[str, Any] = Field(default_factory=dict)
 
@@ -95,6 +99,7 @@ class AssetCreate(AssetBase):
 class AssetUpdate(BaseModel):
     processing_status: str | None = None
     metadata: dict[str, Any] | None = None
+    semantic_role: str | None = None
 
 
 class AssetResponse(AssetBase):

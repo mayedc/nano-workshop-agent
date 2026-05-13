@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import health
+from app.api.routes import agent_runs, assets, health, projects, templates
 from app.core.config import settings
 
 
@@ -29,6 +29,10 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/api/health", tags=["health"])
+app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
+app.include_router(templates.router, prefix="/api/templates", tags=["templates"])
+app.include_router(assets.router, prefix="/api/assets", tags=["assets"])
+app.include_router(agent_runs.router, prefix="/api/runs", tags=["agent-runs"])
 
 
 @app.get("/api")

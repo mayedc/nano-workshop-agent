@@ -7,6 +7,18 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from alembic import context
 from app.core.config import settings
 from app.db.base import Base
+from app.models import (  # noqa: F401
+    AgentRun,
+    Asset,
+    Code,
+    Evidence,
+    ExportRecord,
+    Project,
+    Requirement,
+    Theme,
+    User,
+    WorkshopTemplate,
+)
 
 config = context.config
 

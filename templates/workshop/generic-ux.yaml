@@ -1,0 +1,89 @@
+id: generic-ux
+name: Generic UX Workshop
+description: >
+  A flexible workshop template for general UX research and design activities,
+  supporting various domains and research methods.
+
+inputRoles:
+  - participant
+  - moderator
+  - observer
+  - stakeholder
+
+analysisModules:
+  - thematic_analysis
+  - affinity_diagramming
+  - journey_mapping
+  - persona_extraction
+
+workflowSteps:
+  - id: 1
+    name: Upload Materials
+    agentName: AssetProcessor
+    status: pending
+    dependsOn: []
+  - id: 2
+    name: Define Goals
+    agentName: GoalDesigner
+    status: pending
+    dependsOn: [1]
+  - id: 3
+    name: Preprocess Data
+    agentName: Preprocessor
+    status: pending
+    dependsOn: [1]
+  - id: 4
+    name: Qualitative Analysis
+    agentName: QualitativeAnalyzer
+    status: pending
+    dependsOn: [3]
+  - id: 5
+    name: Quantitative Analysis
+    agentName: QuantitativeAnalyzer
+    status: pending
+    dependsOn: [3]
+  - id: 6
+    name: Synthesis
+    agentName: SynthesisAgent
+    status: pending
+    dependsOn: [4, 5]
+  - id: 7
+    name: Expert Review
+    agentName: ReviewCoordinator
+    status: pending
+    dependsOn: [6]
+  - id: 8
+    name: Export
+    agentName: ExportAgent
+    status: pending
+    dependsOn: [7]
+
+ontology:
+  concepts:
+    - usability
+    - satisfaction
+    - efficiency
+    - learnability
+    - accessibility
+  relationships:
+    - usability -> satisfaction
+    - efficiency -> usability
+    - learnability -> usability
+
+outputTypes:
+  - thematic_map
+  - journey_map
+  - persona_cards
+  - recommendation_list
+  - presentation
+
+reportStructure:
+  - title: Summary
+    type: text
+    sourceSteps: [2]
+  - title: Findings
+    type: chart
+    sourceSteps: [4, 5]
+  - title: Recommendations
+    type: text
+    sourceSteps: [6]

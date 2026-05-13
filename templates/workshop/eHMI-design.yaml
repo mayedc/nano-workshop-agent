@@ -1,0 +1,117 @@
+id: eHMI-design
+name: eHMI Autonomous Vehicle Co-Design
+description: >
+  A workshop template for designing external Human-Machine Interfaces (eHMI)
+  for autonomous vehicles through co-design sessions with pedestrians,
+  cyclists, and drivers.
+
+inputRoles:
+  - pedestrian
+  - cyclist
+  - driver
+  - urban_planner
+  - automotive_designer
+  - HCI_researcher
+
+analysisModules:
+  - thematic_analysis
+  - requirement_extraction
+  - sentiment_analysis
+  - design_insight_generation
+  - prototype_concept_generation
+
+workflowSteps:
+  - id: 1
+    name: Upload Workshop Materials
+    agentName: AssetProcessor
+    status: pending
+    dependsOn: []
+  - id: 2
+    name: Define Research Goal
+    agentName: GoalDesigner
+    status: pending
+    dependsOn: [1]
+  - id: 3
+    name: Transcribe Audio/Video
+    agentName: TranscriptionAgent
+    status: pending
+    dependsOn: [1]
+  - id: 4
+    name: Extract Ontology
+    agentName: OntologyExtractor
+    status: pending
+    dependsOn: [3]
+  - id: 5
+    name: Thematic Analysis
+    agentName: ThematicAnalyzer
+    status: pending
+    dependsOn: [4]
+  - id: 6
+    name: Quantitative Analysis
+    agentName: QuantitativeAnalyzer
+    status: pending
+    dependsOn: [4]
+  - id: 7
+    name: Design Insight Generation
+    agentName: DesignInsightAgent
+    status: pending
+    dependsOn: [5, 6]
+  - id: 8
+    name: Expert Review
+    agentName: ReviewCoordinator
+    status: pending
+    dependsOn: [7]
+  - id: 9
+    name: Prototype Concept Generation
+    agentName: ConceptGenerator
+    status: pending
+    dependsOn: [8]
+  - id: 10
+    name: Export Reports
+    agentName: ExportAgent
+    status: pending
+    dependsOn: [9]
+
+ontology:
+  concepts:
+    - trust
+    - intention
+    - visibility
+    - cultural_context
+    - accessibility
+  relationships:
+    - trust -> intention
+    - visibility -> trust
+    - cultural_context -> trust
+    - accessibility -> visibility
+
+outputTypes:
+  - thematic_map
+  - requirement_list
+  - design_guidelines
+  - prototype_concepts
+  - statistical_report
+  - presentation
+
+reportStructure:
+  - title: Executive Summary
+    type: text
+    sourceSteps: [2]
+  - title: Methodology
+    type: text
+    sourceSteps: [1, 2]
+  - title: Thematic Analysis
+    type: chart
+    sourceSteps: [5]
+  - title: Quantitative Findings
+    type: table
+    sourceSteps: [6]
+  - title: Design Insights
+    type: text
+    sourceSteps: [7]
+  - title: Prototype Concepts
+    type: image
+    sourceSteps: [9]
+  - title: Recommendations
+    type: text
+    sourceSteps: [7, 9]

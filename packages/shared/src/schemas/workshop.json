@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorkshopTemplate",
+  "type": "object",
+  "required": ["id", "name", "description", "inputRoles", "analysisModules", "workflowSteps", "ontology", "outputTypes", "reportStructure"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "inputRoles": { "type": "array", "items": { "type": "string" } },
+    "analysisModules": { "type": "array", "items": { "type": "string" } },
+    "workflowSteps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "agentName", "dependsOn"],
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "agentName": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "awaiting_input", "completed", "failed"] },
+          "dependsOn": { "type": "array", "items": { "type": "integer" } }
+        }
+      }
+    },
+    "ontology": { "type": "object" },
+    "outputTypes": { "type": "array", "items": { "type": "string" } },
+    "reportStructure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "type", "sourceSteps"],
+        "properties": {
+          "title": { "type": "string" },
+          "type": { "type": "string", "enum": ["text", "chart", "table", "image"] },
+          "sourceSteps": { "type": "array", "items": { "type": "integer" } }
+        }
+      }
+    }
+  }
+}

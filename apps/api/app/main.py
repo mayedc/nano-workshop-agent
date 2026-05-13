@@ -3,7 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import agent_runs, assets, health, projects, templates
+from app.agents.mock_agents import register_mock_agents
+from app.agents.registry import agent_registry
+from app.api.routes import agent_runs, assets, health, projects, templates, workflows
 from app.core.config import settings
 from app.providers.mock import register_mock_providers
 from app.templates.loader import load_and_validate_templates
@@ -11,9 +13,10 @@ from app.templates.loader import load_and_validate_templates
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: load templates and register mock providers
+    # Startup: load templates, register providers and agents
     load_and_validate_templates()
     register_mock_providers()
+    register_mock_agents(agent_registry)
     yield
     # Shutdown
 
@@ -37,6 +40,7 @@ app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
 app.include_router(templates.router, prefix="/api/templates", tags=["templates"])
 app.include_router(assets.router, prefix="/api/assets", tags=["assets"])
 app.include_router(agent_runs.router, prefix="/api/runs", tags=["agent-runs"])
+app.include_router(workflows.router, prefix="/api/workflows", tags=["workflows"])
 
 
 @app.get("/api")

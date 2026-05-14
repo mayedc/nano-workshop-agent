@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, Download, FileText, FileSpreadsheet, Presentation } from "lucide-react";
+import type { ExportRecord } from "@/types";
 
 const formatIcon: Record<string, React.ReactNode> = {
   docx: <FileText className="h-4 w-4" />,
@@ -18,7 +19,7 @@ const formatIcon: Record<string, React.ReactNode> = {
 export default function ExportsPage() {
   const { data: exports, isLoading } = useQuery({
     queryKey: ["exports"],
-    queryFn: api.listAgentRuns,
+    queryFn: api.listExports,
   });
 
   return (
@@ -49,11 +50,11 @@ export default function ExportsPage() {
                     <TableCell colSpan={4} className="text-center text-muted-foreground">No exports yet.</TableCell>
                   </TableRow>
                 ) : (
-                  (exports || []).map((ex: any) => (
+                  (exports || []).map((ex: ExportRecord) => (
                     <TableRow key={ex.id}>
                       <TableCell><div className="flex items-center gap-2">{formatIcon[ex.format] || <FileText className="h-4 w-4" />}<span className="uppercase">{ex.format}</span></div></TableCell>
-                      <TableCell><Badge variant="outline">{ex.status}</Badge></TableCell>
-                      <TableCell>{new Date(ex.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell><Badge variant="outline">completed</Badge></TableCell>
+                      <TableCell>{new Date(ex.generated_at).toLocaleDateString()}</TableCell>
                       <TableCell><Button variant="outline" size="sm">Download</Button></TableCell>
                     </TableRow>
                   ))

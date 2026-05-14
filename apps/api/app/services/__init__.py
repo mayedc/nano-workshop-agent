@@ -3,6 +3,7 @@ from app.models import (
     Asset,
     Code,
     Evidence,
+    ExpertFeedback,
     ExportRecord,
     Project,
     Requirement,
@@ -22,3 +23,4 @@ theme = CRUDBase(Theme)
 requirement = CRUDBase(Requirement)
 agent_run = CRUDBase(AgentRun)
 export_record = CRUDBase(ExportRecord)
+feedback = CRUDBase(ExpertFeedback)

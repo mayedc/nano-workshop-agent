@@ -118,7 +118,7 @@ export default function ProjectsPage() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Link href={`/projects/${p.id}/dashboard`} className="w-full">
+                  <Link href={`/projects/${p.id}/dashboard`}>
                     <Button variant="secondary" className="w-full">
                       Open <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

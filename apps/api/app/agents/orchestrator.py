@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -34,6 +34,7 @@ class WorkflowOrchestrator:
     def __init__(self, registry: AgentRegistry) -> None:
         self.registry = registry
         self._stop_on_failure: bool = True
+        self._persist_lock = asyncio.Lock()
 
     def set_stop_on_failure(self, value: bool) -> None:
         self._stop_on_failure = value
@@ -51,7 +52,7 @@ class WorkflowOrchestrator:
         steps_by_id = {s.id: s for s in plan.steps}
 
         async def execute_step(step: WorkflowStep) -> WorkflowResult:
-            started_at = datetime.utcnow()
+            started_at = datetime.now(timezone.utc)
             agent = self.registry.get(step.agent)
             step_context = context.model_copy(deep=True)
             step_context.inputs.update(step.inputs)
@@ -65,7 +66,7 @@ class WorkflowOrchestrator:
                 status = "failed"
                 error = str(exc)
 
-            completed_at = datetime.utcnow()
+            completed_at = datetime.now(timezone.utc)
 
             # Persist to DB if available
             if db is not None:
@@ -131,7 +132,7 @@ class WorkflowOrchestrator:
         if step is None:
             raise ValueError(f"Step {step_id} not found in plan")
 
-        started_at = datetime.utcnow()
+        started_at = datetime.now(timezone.utc)
         agent = self.registry.get(step.agent)
         step_context = context.model_copy(deep=True)
         step_context.inputs.update(step.inputs)
@@ -163,7 +164,7 @@ class WorkflowOrchestrator:
             result=agent_result,
             error=error,
             started_at=started_at,
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
         )
 
     async def _persist_run(
@@ -176,24 +177,25 @@ class WorkflowOrchestrator:
         result: AgentResult | None,
         error: str | None,
     ) -> None:
-        from app.schemas import AgentRunCreate
-        from app.services import agent_run as agent_run_service
+        async with self._persist_lock:
+            from app.schemas import AgentRunCreate
+            from app.services import agent_run as agent_run_service
 
-        output_data = result.outputs if result else {}
-        evidence_ids = result.evidence_ids if result else []
-        confidence = result.confidence if result else None
+            output_data = result.outputs if result else {}
+            evidence_ids = result.evidence_ids if result else []
+            confidence = result.confidence if result else None
 
-        await agent_run_service.create(
-            db,
-            obj_in=AgentRunCreate(
-                project_id=project_id,
-                agent_name=agent_name,
-                step_id=int(step_id) if step_id.isdigit() else None,
-                status=status,
-                input_data={"step_id": step_id},
-                output_data=output_data,
-                confidence=confidence,
-                evidence_ids=evidence_ids,
-                error=error,
-            ).model_dump(),
-        )
+            await agent_run_service.create(
+                db,
+                obj_in=AgentRunCreate(
+                    project_id=project_id,
+                    agent_name=agent_name,
+                    step_id=int(step_id) if step_id.isdigit() else None,
+                    status=status,
+                    input_data={"step_id": step_id},
+                    output_data=output_data,
+                    confidence=confidence,
+                    evidence_ids=evidence_ids,
+                    error=error,
+                ).model_dump(),
+            )

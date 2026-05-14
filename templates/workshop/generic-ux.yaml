@@ -4,59 +4,59 @@ description: >
   A flexible workshop template for general UX research and design activities,
   supporting various domains and research methods.
 
-inputRoles:
+input_roles:
   - participant
   - moderator
   - observer
   - stakeholder
 
-analysisModules:
+analysis_modules:
   - thematic_analysis
   - affinity_diagramming
   - journey_mapping
   - persona_extraction
 
-workflowSteps:
+workflow_steps:
   - id: 1
     name: Upload Materials
-    agentName: AssetProcessor
+    agent_name: PreprocessingAgent
     status: pending
-    dependsOn: []
+    depends_on: []
   - id: 2
     name: Define Goals
-    agentName: GoalDesigner
+    agent_name: GoalUnderstandingAgent
     status: pending
-    dependsOn: [1]
+    depends_on: [1]
   - id: 3
     name: Preprocess Data
-    agentName: Preprocessor
+    agent_name: PreprocessingAgent
     status: pending
-    dependsOn: [1]
+    depends_on: [1]
   - id: 4
     name: Qualitative Analysis
-    agentName: QualitativeAnalyzer
+    agent_name: QualitativeAnalysisAgent
     status: pending
-    dependsOn: [3]
+    depends_on: [3]
   - id: 5
     name: Quantitative Analysis
-    agentName: QuantitativeAnalyzer
+    agent_name: QuantitativeAnalysisAgent
     status: pending
-    dependsOn: [3]
+    depends_on: [3]
   - id: 6
-    name: Synthesis
-    agentName: SynthesisAgent
+    name: Synthesis and Insights
+    agent_name: DesignInsightAgent
     status: pending
-    dependsOn: [4, 5]
+    depends_on: [4, 5]
   - id: 7
     name: Expert Review
-    agentName: ReviewCoordinator
+    agent_name: ExpertReviewAgent
     status: pending
-    dependsOn: [6]
+    depends_on: [6]
   - id: 8
     name: Export
-    agentName: ExportAgent
+    agent_name: ExportAgent
     status: pending
-    dependsOn: [7]
+    depends_on: [7]
 
 ontology:
   concepts:
@@ -70,20 +70,20 @@ ontology:
     - efficiency -> usability
     - learnability -> usability
 
-outputTypes:
+output_types:
   - thematic_map
   - journey_map
   - persona_cards
   - recommendation_list
   - presentation
 
-reportStructure:
+report_structure:
   - title: Summary
     type: text
-    sourceSteps: [2]
+    source_steps: [2]
   - title: Findings
     type: chart
-    sourceSteps: [4, 5]
+    source_steps: [4, 5]
   - title: Recommendations
     type: text
-    sourceSteps: [6]
+    source_steps: [6]

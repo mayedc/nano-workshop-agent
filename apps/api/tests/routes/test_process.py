@@ -1,5 +1,5 @@
 import pytest
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 from app.services.storage import MemoryStorage, set_storage
@@ -12,10 +12,15 @@ def setup():
     register_mock_providers()
 
 
+@pytest.fixture(autouse=True)
+def _db_override(override_get_db):
+    pass
+
+
 @pytest.mark.asyncio
 async def test_process_asset_sync():
     # First upload an asset
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         upload_resp = await ac.post(
             "/api/assets/project/proj-test/upload",
             files={"file": ("test.txt", b"hello world", "text/plain")},
@@ -24,7 +29,7 @@ async def test_process_asset_sync():
     asset_id = upload_resp.json()["id"]
 
     # Process it synchronously
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         process_resp = await ac.post(
             f"/api/assets/{asset_id}/process-sync?project_id=proj-test",
         )
@@ -37,6 +42,6 @@ async def test_process_asset_sync():
 
 @pytest.mark.asyncio
 async def test_process_asset_not_found():
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.post("/api/assets/nonexistent/process-sync?project_id=proj-test")
     assert resp.status_code == 404

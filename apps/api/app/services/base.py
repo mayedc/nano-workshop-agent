@@ -29,8 +29,7 @@ class CRUDBase(Generic[ModelType]):
 
     async def update(self, db: AsyncSession, *, db_obj: ModelType, obj_in: dict[str, Any]) -> ModelType:
         for field, value in obj_in.items():
-            if value is not None:
-                setattr(db_obj, field, value)
+            setattr(db_obj, field, value)
         db.add(db_obj)
         await db.commit()
         await db.refresh(db_obj)

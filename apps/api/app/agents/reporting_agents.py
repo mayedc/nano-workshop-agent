@@ -26,27 +26,98 @@ class ExpertReviewAgent(BaseWorkshopAgent):
 
 class IterationAgent(BaseWorkshopAgent):
     name = "IterationAgent"
-    description = "Manages design iteration cycles based on expert feedback."
+    description = "Manages design iteration cycles based on expert feedback with 8 review actions."
 
     async def run(self, context: AgentContext) -> AgentResult:
-        feedback = context.inputs.get("feedback", [])
+        feedback_items: list[dict] = context.inputs.get("feedback", [])
         iteration = context.inputs.get("iteration", 1)
+        target_type = context.inputs.get("target_type", "all")
+
+        actions_count: dict[str, int] = {}
+        rerun_targets: list[dict] = []
+        revised_items: list[dict] = []
+        approved_count = 0
+
+        for fb in feedback_items:
+            action = fb.get("action", "")
+            actions_count[action] = actions_count.get(action, 0) + 1
+
+            if action == "approve":
+                approved_count += 1
+            elif action in ("reject", "request_rerun"):
+                rerun_targets.append({
+                    "target_id": fb.get("target_id"),
+                    "target_type": fb.get("target_type"),
+                    "reason": fb.get("comment", f"Rerun requested via {action}"),
+                })
+            elif action == "revise":
+                revised_items.append({
+                    "target_id": fb.get("target_id"),
+                    "target_type": fb.get("target_type"),
+                    "suggested_revision": fb.get("suggested_revision", {}),
+                    "comment": fb.get("comment", ""),
+                })
+            elif action == "merge":
+                rerun_targets.append({
+                    "target_id": fb.get("target_id"),
+                    "target_type": fb.get("target_type"),
+                    "reason": fb.get("comment", "Merge requested"),
+                    "merge_ids": fb.get("suggested_revision", {}).get("merge_ids", []),
+                })
+            elif action == "split":
+                rerun_targets.append({
+                    "target_id": fb.get("target_id"),
+                    "target_type": fb.get("target_type"),
+                    "reason": fb.get("comment", "Split requested"),
+                })
+
+        total = len(feedback_items)
+        conflict = any(
+            actions_count.get(a, 0) > 0 and actions_count.get(b, 0) > 0
+            for a, b in [("approve", "reject"), ("approve", "request_rerun")]
+        )
 
         return AgentResult(
             agent_name=self.name,
             status="completed",
             outputs={
                 "iteration": iteration,
-                "feedback_addressed": len(feedback),
-                "changes_made": [
-                    {"field": "concept_description", "reason": "clarity"},
-                    {"field": "requirement_priority", "reason": "expert_input"},
-                ],
-                "next_steps": ["regenerate_concepts", "update_matrix"],
+                "target_type": target_type,
+                "feedback_processed": total,
+                "actions_summary": actions_count,
+                "approved_count": approved_count,
+                "rerun_required": len(rerun_targets),
+                "rerun_targets": rerun_targets,
+                "revised_items": revised_items,
+                "has_conflict": conflict,
+                "next_steps": self._build_next_steps(
+                    approved_count, rerun_targets, revised_items, total, conflict
+                ),
             },
-            evidence_ids=[f.get("id") for f in feedback if f.get("id")],
+            evidence_ids=[fb.get("target_id") for fb in feedback_items if fb.get("target_id")],
             confidence=0.85,
         )
+
+    def _build_next_steps(
+        self,
+        approved: int,
+        rerun_targets: list[dict],
+        revised: list[dict],
+        total: int,
+        conflict: bool,
+    ) -> list[str]:
+        steps: list[str] = []
+        if conflict:
+            steps.append("resolve_conflicts: contradictory approve/reject feedback exists")
+        if rerun_targets:
+            agents = {t["target_type"] for t in rerun_targets}
+            for agent in agents:
+                steps.append(f"rerun_{agent}_agent")
+        if revised:
+            steps.append("apply_revisions")
+        if not rerun_targets and not revised and approved == total:
+            steps.append("iteration_complete")
+        return steps
 
 
 class ReportGenerationAgent(BaseWorkshopAgent):

@@ -52,42 +52,42 @@ ontology:
 workflow_steps:
   - id: 1
     name: Upload Workshop Materials
-    agent_name: AssetProcessor
+    agent_name: PreprocessingAgent
     status: pending
     depends_on: []
   - id: 2
     name: Define Research Goal
-    agent_name: GoalDesigner
+    agent_name: GoalUnderstandingAgent
     status: pending
     depends_on: [1]
   - id: 3
-    name: Transcribe Audio/Video
-    agent_name: TranscriptionAgent
+    name: Process Audio and Video
+    agent_name: PreprocessingAgent
     status: pending
     depends_on: [1]
   - id: 4
-    name: Extract Ontology
-    agent_name: OntologyExtractor
+    name: Metadata Fusion
+    agent_name: MetadataFusionAgent
     status: pending
     depends_on: [3]
   - id: 5
     name: Qualitative Coding
-    agent_name: QualitativeCoder
+    agent_name: QualitativeAnalysisAgent
     status: pending
     depends_on: [4]
   - id: 6
     name: Thematic Analysis
-    agent_name: ThematicAnalyzer
+    agent_name: ThemeExtractionAgent
     status: pending
     depends_on: [5]
   - id: 7
     name: Questionnaire Statistics
-    agent_name: QuantitativeAnalyzer
+    agent_name: QuantitativeAnalysisAgent
     status: pending
     depends_on: [1]
   - id: 8
     name: Prototype Analysis
-    agent_name: PrototypeAnalyzer
+    agent_name: PrototypeAnalysisAgent
     status: pending
     depends_on: [1]
   - id: 9
@@ -97,12 +97,12 @@ workflow_steps:
     depends_on: [6, 7, 8]
   - id: 10
     name: Expert Review
-    agent_name: ReviewCoordinator
+    agent_name: ExpertReviewAgent
     status: pending
     depends_on: [9]
   - id: 11
     name: Concept Design Generation
-    agent_name: ConceptGenerator
+    agent_name: DesignConceptAgent
     status: pending
     depends_on: [10]
   - id: 12

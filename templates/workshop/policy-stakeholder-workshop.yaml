@@ -50,54 +50,49 @@ ontology:
 workflow_steps:
   - id: 1
     name: Upload Policy Materials
-    agent_name: AssetProcessor
+    agent_name: PreprocessingAgent
     status: pending
     depends_on: []
   - id: 2
     name: Define Policy Scope
-    agent_name: GoalDesigner
+    agent_name: GoalUnderstandingAgent
     status: pending
     depends_on: [1]
   - id: 3
     name: Preprocess Documents
-    agent_name: Preprocessor
+    agent_name: PreprocessingAgent
     status: pending
     depends_on: [1]
   - id: 4
-    name: Stakeholder Mapping
-    agent_name: StakeholderMapper
+    name: Stakeholder Analysis
+    agent_name: QualitativeAnalysisAgent
     status: pending
     depends_on: [3]
   - id: 5
     name: Argument Mining
-    agent_name: ArgumentMiner
+    agent_name: CodingAgent
     status: pending
     depends_on: [3]
   - id: 6
-    name: Consensus Detection
-    agent_name: ConsensusDetector
+    name: Consensus and Conflict Analysis
+    agent_name: QuantitativeAnalysisAgent
     status: pending
     depends_on: [5]
   - id: 7
-    name: Conflict Detection
-    agent_name: ConflictDetector
-    status: pending
-    depends_on: [5]
-  - id: 8
     name: Policy Recommendation
-    agent_name: PolicyRecommender
+    agent_name: DesignInsightAgent
     status: pending
-    depends_on: [6, 7]
-  - id: 9
+    depends_on: [6]
+  - id: 8
     name: Expert Review
-    agent_name: ReviewCoordinator
+    agent_name: ExpertReviewAgent
     status: pending
-    depends_on: [8]
-  - id: 10
+    depends_on: [7]
+  - id: 9
     name: Export Policy Brief
     agent_name: ExportAgent
     status: pending
-    depends_on: [9]
+    depends_on: [8]
 
 report_structure:
   - title: Policy Context
@@ -106,18 +101,15 @@ report_structure:
   - title: Stakeholder Matrix
     type: table
     source_steps: [4]
-  - title: Arguments and Positions
+  - title: Key Arguments
     type: chart
     source_steps: [5]
-  - title: Areas of Consensus
+  - title: Consensus and Conflicts
     type: text
     source_steps: [6]
-  - title: Areas of Conflict
-    type: chart
-    source_steps: [7]
   - title: Policy Recommendations
     type: text
-    source_steps: [8]
+    source_steps: [7]
   - title: Implementation Brief
     type: text
-    source_steps: [8]
+    source_steps: [7]

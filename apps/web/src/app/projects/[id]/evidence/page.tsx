@@ -12,7 +12,7 @@ export default function EvidencePage() {
   const { id } = useParams() as { id: string };
   const { data: evidence, isLoading } = useQuery({
     queryKey: ["evidence", id],
-    queryFn: api.listEvidence,
+    queryFn: () => api.listProjectEvidence(id),
   });
 
   return (

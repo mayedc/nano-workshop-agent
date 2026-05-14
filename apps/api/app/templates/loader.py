@@ -7,7 +7,7 @@ from app.templates.dsl import WorkshopTemplateDSL
 
 logger = logging.getLogger(__name__)
 
-TEMPLATES_DIR = Path(__file__).parents[3] / "templates" / "workshop"
+TEMPLATES_DIR = Path(__file__).parents[4] / "templates" / "workshop"
 
 
 class TemplateRegistry:

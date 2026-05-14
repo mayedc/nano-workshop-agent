@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.agents.mock_agents import register_mock_agents
 from app.agents.registry import agent_registry
-from app.api.routes import agent_runs, assets, health, projects, templates, workflows
+from app.api.routes import agent_runs, assets, evidence, exports, feedback, health, projects, templates, workflows
 from app.core.config import settings
 from app.providers.mock import register_mock_providers
 from app.templates.loader import load_and_validate_templates
@@ -40,7 +40,10 @@ app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
 app.include_router(templates.router, prefix="/api/templates", tags=["templates"])
 app.include_router(assets.router, prefix="/api/assets", tags=["assets"])
 app.include_router(agent_runs.router, prefix="/api/runs", tags=["agent-runs"])
+app.include_router(evidence.router, prefix="/api/evidence", tags=["evidence"])
+app.include_router(exports.router, prefix="/api/exports", tags=["exports"])
 app.include_router(workflows.router, prefix="/api/workflows", tags=["workflows"])
+app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
 
 
 @app.get("/api")

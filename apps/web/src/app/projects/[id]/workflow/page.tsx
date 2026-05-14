@@ -1,12 +1,11 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, Play, RotateCcw } from "lucide-react";
 import ReactFlow, { Background, Controls, MiniMap, useNodesState, useEdgesState, type Node, type Edge } from "reactflow";
 import "reactflow/dist/style.css";
@@ -33,31 +32,35 @@ export default function WorkflowPage() {
     queryFn: api.listAgents,
   });
 
-  const initialNodes: Node[] = (template?.workflow_steps || []).map((step, i) => ({
-    id: String(step.id),
-    data: { label: step.name, agent: step.agent_name, status: step.status },
-    position: { x: 200 + i * 20, y: 100 + i * 120 },
-    style: {
-      borderRadius: 8,
-      padding: 10,
-      border: "1px solid #e2e8f0",
-      background: "white",
-      width: 220,
-    },
-  }));
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const initialEdges: Edge[] = (template?.workflow_steps || []).flatMap((step) =>
-    (step.depends_on || []).map((dep) => ({
-      id: `${dep}-${step.id}`,
-      source: String(dep),
-      target: String(step.id),
-      animated: step.status === "in_progress",
-      style: { stroke: step.status === "completed" ? "#22c55e" : "#94a3b8" },
-    }))
-  );
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  useEffect(() => {
+    if (!template?.workflow_steps) return;
+    const newNodes: Node[] = template.workflow_steps.map((step, i) => ({
+      id: String(step.id),
+      data: { label: step.name, agent: step.agent_name, status: step.status },
+      position: { x: 200 + i * 20, y: 100 + i * 120 },
+      style: {
+        borderRadius: 8,
+        padding: 10,
+        border: "1px solid #e2e8f0",
+        background: "white",
+        width: 220,
+      },
+    }));
+    const newEdges: Edge[] = template.workflow_steps.flatMap((step) =>
+      (step.depends_on || []).map((dep) => ({
+        id: `${dep}-${step.id}`,
+        source: String(dep),
+        target: String(step.id),
+        animated: step.status === "in_progress",
+        style: { stroke: step.status === "completed" ? "#22c55e" : "#94a3b8" },
+      }))
+    );
+    setNodes(newNodes);
+    setEdges(newEdges);
+  }, [template, setNodes, setEdges]);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedAgent(node.data.agent);

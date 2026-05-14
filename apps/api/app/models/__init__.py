@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
@@ -13,6 +13,10 @@ def generate_uuid() -> str:
     return str(uuid.uuid4())
 
 
+def utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -21,7 +25,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     projects: Mapped[list["Project"]] = relationship("Project", back_populates="owner")
 
@@ -34,7 +38,7 @@ class WorkshopTemplate(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     projects: Mapped[list["Project"]] = relationship("Project", back_populates="template")
 
@@ -51,9 +55,9 @@ class Project(Base):
     owner_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
     status: Mapped[str] = mapped_column(String(32), default="draft")
     config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
 
     owner: Mapped["User"] = relationship("User", back_populates="projects")
@@ -65,6 +69,7 @@ class Project(Base):
     requirements: Mapped[list["Requirement"]] = relationship("Requirement", back_populates="project")
     agent_runs: Mapped[list["AgentRun"]] = relationship("AgentRun", back_populates="project")
     exports: Mapped[list["ExportRecord"]] = relationship("ExportRecord", back_populates="project")
+    feedback: Mapped[list["ExpertFeedback"]] = relationship("ExpertFeedback", back_populates="project")
 
 
 class Asset(Base):
@@ -81,8 +86,8 @@ class Asset(Base):
     source_stage: Mapped[str | None] = mapped_column(String(128), nullable=True)
     uploaded_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
     processing_status: Mapped[str] = mapped_column(String(32), default="pending")
-    metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    extra_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="assets")
     evidence: Mapped[list["Evidence"]] = relationship("Evidence", back_populates="asset")
@@ -98,8 +103,8 @@ class Evidence(Base):
     )
     type: Mapped[str] = mapped_column(String(32), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    extracted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    extra_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    extracted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="evidence")
     asset: Mapped["Asset | None"] = relationship("Asset", back_populates="evidence")
@@ -114,7 +119,7 @@ class Code(Base):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
     created_by: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="codes")
 
@@ -129,7 +134,7 @@ class Theme(Base):
     code_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
     evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
     confidence: Mapped[float | None] = mapped_column(nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="themes")
 
@@ -143,7 +148,7 @@ class Requirement(Base):
     priority: Mapped[str] = mapped_column(String(16), default="medium")
     source_evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
     status: Mapped[str] = mapped_column(String(32), default="draft")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="requirements")
 
@@ -162,7 +167,7 @@ class AgentRun(Base):
     evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
     review_status: Mapped[str] = mapped_column(String(32), default="pending")
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     project: Mapped["Project"] = relationship("Project", back_populates="agent_runs")
@@ -176,7 +181,25 @@ class ExportRecord(Base):
     format: Mapped[str] = mapped_column(String(16), nullable=False)
     file_url: Mapped[str] = mapped_column(String(1024), nullable=False)
     config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
-    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     generated_by: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
 
     project: Mapped["Project"] = relationship("Project", back_populates="exports")
+
+
+class ExpertFeedback(Base):
+    __tablename__ = "expert_feedback"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
+    reviewer_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+    target_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    target_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    action: Mapped[str] = mapped_column(String(32), nullable=False)
+    score: Mapped[int | None] = mapped_column(nullable=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    suggested_revision: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    review_status: Mapped[str] = mapped_column(String(32), default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    project: Mapped["Project"] = relationship("Project", back_populates="feedback")

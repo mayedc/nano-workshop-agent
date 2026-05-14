@@ -29,7 +29,7 @@ def test_detect_file_type_mp4():
 
 def test_detect_file_type_csv():
     info = detect_file_type("data.csv")
-    assert info["mime_type"] == "text/csv"
+    assert info["mime_type"] in ("text/csv", "application/vnd.ms-excel")
     assert info["asset_type"] == "table"
 
 

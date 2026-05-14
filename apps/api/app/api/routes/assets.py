@@ -164,7 +164,7 @@ async def process_asset_sync(
                 asset_id=asset_id,
                 type=candidate["type"],
                 content=candidate["content"],
-                metadata=candidate.get("metadata", {}),
+                extra_metadata=candidate.get("metadata", {}),
             ).model_dump(),
         )
         evidence_ids.append(ev.id)
@@ -175,8 +175,8 @@ async def process_asset_sync(
         db_obj=asset,
         obj_in={
             "processing_status": "completed",
-            "metadata": {
-                **(asset.metadata or {}),
+            "extra_metadata": {
+                **(asset.extra_metadata or {}),
                 "processing_result": result.to_dict(),
                 "evidence_ids": evidence_ids,
             },

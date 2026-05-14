@@ -2,21 +2,22 @@ import asyncio
 from typing import Any
 
 from app.core.celery import celery_app
-from app.db.base import Base
 from app.db.session import AsyncSessionLocal
-from app.models import Asset, Evidence
+from app.models import Evidence
 from app.schemas import EvidenceCreate
 from app.services import asset as asset_service
 from app.services import evidence as evidence_service
 from app.services.preprocessing import preprocessing_service
 from app.services.storage import get_storage
-from sqlalchemy import select
 
 
 @celery_app.task(bind=True, max_retries=3)
 def process_asset_task(self, asset_id: str, project_id: str) -> dict[str, Any]:
     """Celery task to process an asset and create evidence records."""
-    return asyncio.run(_process_asset_async(asset_id, project_id))
+    try:
+        return asyncio.run(_process_asset_async(asset_id, project_id))
+    except Exception as exc:
+        raise self.retry(exc=exc, countdown=10)
 
 
 async def _process_asset_async(asset_id: str, project_id: str) -> dict[str, Any]:
@@ -55,7 +56,7 @@ async def _process_asset_async(asset_id: str, project_id: str) -> dict[str, Any]
                         asset_id=asset_id,
                         type=candidate["type"],
                         content=candidate["content"],
-                        metadata=candidate.get("metadata", {}),
+                        extra_metadata=candidate.get("metadata", {}),
                     ).model_dump(),
                 )
                 evidence_ids.append(ev.id)
@@ -66,8 +67,8 @@ async def _process_asset_async(asset_id: str, project_id: str) -> dict[str, Any]
                 db_obj=asset,
                 obj_in={
                     "processing_status": "completed",
-                    "metadata": {
-                        **(asset.metadata or {}),
+                    "extra_metadata": {
+                        **(asset.extra_metadata or {}),
                         "processing_result": result.to_dict(),
                         "evidence_ids": evidence_ids,
                     },
@@ -90,10 +91,10 @@ async def _process_asset_async(asset_id: str, project_id: str) -> dict[str, Any]
                     db_obj=asset,
                     obj_in={
                         "processing_status": "failed",
-                        "metadata": {
-                            **(asset.metadata or {}),
+                        "extra_metadata": {
+                            **(asset.extra_metadata or {}),
                             "error": str(exc),
                         },
                     },
                 )
-            raise self.retry(exc=exc, countdown=10)
+            raise

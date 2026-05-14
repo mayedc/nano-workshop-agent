@@ -14,7 +14,22 @@ async def db():
         await conn.run_sync(Base.metadata.create_all)
 
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
     async with async_session() as session:
         yield session
 
     await engine.dispose()
+
+
+@pytest.fixture
+def override_get_db(db):
+    """Override the FastAPI dependency to use the test SQLite DB."""
+    from app.db.session import get_db as original_get_db
+
+    async def _override():
+        yield db
+
+    from app.main import app
+    app.dependency_overrides[original_get_db] = _override
+    yield
+    app.dependency_overrides.clear()

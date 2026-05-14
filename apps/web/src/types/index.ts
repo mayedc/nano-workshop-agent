@@ -22,7 +22,7 @@ export interface Asset {
   source_stage: string | null;
   uploaded_by: string | null;
   processing_status: "pending" | "in_progress" | "completed" | "failed";
-  metadata: Record<string, unknown>;
+  extra_metadata: Record<string, unknown>;
   created_at: string;
 }
 
@@ -32,7 +32,7 @@ export interface Evidence {
   asset_id: string | null;
   type: string;
   content: string;
-  metadata: Record<string, unknown>;
+  extra_metadata: Record<string, unknown>;
   extracted_at: string;
 }
 
@@ -158,3 +158,37 @@ export interface DesignConcept {
   description: string;
   prompt: string;
 }
+
+export interface ExpertFeedback {
+  id: string;
+  project_id: string;
+  reviewer_id: string | null;
+  target_type: string;
+  target_id: string;
+  action: string;
+  score: number | null;
+  comment: string | null;
+  suggested_revision: Record<string, unknown> | null;
+  review_status: string;
+  created_at: string;
+}
+
+export const TARGET_TYPES = [
+  "codes",
+  "themes",
+  "requirements",
+  "insights",
+  "concepts",
+  "report_sections",
+] as const;
+
+export const REVIEW_ACTIONS = [
+  "approve",
+  "reject",
+  "revise",
+  "merge",
+  "split",
+  "score",
+  "comment",
+  "request_rerun",
+] as const;

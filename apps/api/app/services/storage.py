@@ -124,7 +124,7 @@ def detect_file_type(filename: str) -> dict[str, str]:
         "video/mp4": "video",
         "model/gltf+json": "3d",
         "model/gltf-binary": "3d",
-        "application/octet-stream": "3d",
+        "application/octet-stream": "unknown",
         "application/json": "data",
         "application/zip": "archive",
     }

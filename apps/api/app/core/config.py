@@ -1,7 +1,9 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+
     PROJECT_NAME: str = "Nano Workshop Agent"
     VERSION: str = "0.1.0"
     API_HOST: str = "0.0.0.0"
@@ -15,10 +17,6 @@ class Settings(BaseSettings):
     MINIO_BUCKET: str = "nano-workshop"
     SECRET_KEY: str = "change-me-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
 
 
 settings = Settings()

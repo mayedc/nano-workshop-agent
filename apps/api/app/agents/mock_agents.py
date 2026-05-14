@@ -144,6 +144,13 @@ def register_mock_agents(registry: Any) -> None:
         DesignInsightAgent,
         PrototypeAnalysisAgent,
     )
+    from app.agents.data_analysis_agents import (
+        CodeAgent,
+        DataProfileAgent,
+        PlannerAgent,
+        RepairAgent,
+        ResultExplainerAgent,
+    )
     from app.agents.eval_agents import EvaluationAgent
     from app.agents.realtime_agents import MCPConnectorAgent, MeetingRealtimeAgent
     from app.agents.reporting_agents import (
@@ -184,3 +191,10 @@ def register_mock_agents(registry: Any) -> None:
 
     # Evaluation agents
     registry.register(EvaluationAgent())
+
+    # Data analysis agents
+    registry.register(DataProfileAgent())
+    registry.register(PlannerAgent())
+    registry.register(CodeAgent())
+    registry.register(RepairAgent())
+    registry.register(ResultExplainerAgent())

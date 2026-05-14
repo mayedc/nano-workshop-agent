@@ -11,6 +11,7 @@ class AgentContext(BaseModel):
     inputs: dict[str, Any] = Field(default_factory=dict)
     memory: dict[str, Any] = Field(default_factory=dict)
     constraints: dict[str, Any] = Field(default_factory=dict)
+    project_config: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentResult(BaseModel):

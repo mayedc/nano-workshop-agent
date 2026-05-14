@@ -18,5 +18,12 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # LLM defaults (can be overridden per-project)
+    LLM_PROVIDER: str = "mock"  # mock | anthropic | zhipu
+    ANTHROPIC_API_KEY: str | None = None
+    ZHIPU_API_KEY: str | None = None
+    LLM_MODEL: str = "claude-sonnet-4-6"
+    LLM_MAX_TOKENS: int = 4096
+
 
 settings = Settings()

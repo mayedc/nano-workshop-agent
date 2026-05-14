@@ -119,6 +119,34 @@ export const api = {
   listTargetTypes: () => fetcher<string[]>("/api/feedback/targets/types"),
   listReviewActions: () => fetcher<string[]>("/api/feedback/actions/list"),
 
+  // Project Config
+  getProjectConfig: (id: string) =>
+    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string } }>(`/api/projects/${id}/config`),
+  updateProjectConfig: (id: string, data: { agents?: Array<{ id?: string; name: string; model?: string }>; llm_config?: { provider?: string; api_key?: string; model?: string } }) =>
+    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string } }>(`/api/projects/${id}/config`, { method: "PUT", body: JSON.stringify(data) }),
+
+  // Data Analysis
+  analyzeProjectData: (projectId: string, data: { asset_id: string; user_question: string }) =>
+    fetcher<{
+      project_id: string;
+      steps: Array<{
+        agent: string;
+        status: string;
+        output?: unknown;
+        error?: string | null;
+        stdout?: string;
+        result_type?: string;
+      }>;
+      final_answer: string;
+      code?: string | null;
+      execution?: {
+        result?: unknown;
+        result_type?: string;
+        stdout?: string;
+        error?: string | null;
+      } | null;
+    }>(`/api/projects/${projectId}/analyze`, { method: "POST", body: JSON.stringify(data) }),
+
   // Health
   health: () => fetcher<{ status: string }>("/api/health/"),
 };

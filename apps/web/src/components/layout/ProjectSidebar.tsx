@@ -18,12 +18,14 @@ import {
   Download,
   PanelLeftClose,
   PanelLeft,
+  Sparkles,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 
 const nav = [
   { label: "Dashboard", href: "dashboard", icon: LayoutDashboard },
   { label: "Upload", href: "upload", icon: Upload },
+  { label: "Analyze", href: "analyze", icon: Sparkles },
   { label: "Workflow", href: "workflow", icon: GitBranch },
   { label: "Evidence", href: "evidence", icon: FileText },
   { label: "Coding", href: "coding", icon: Tag },

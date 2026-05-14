@@ -1,4 +1,5 @@
 """Demo entry point - uses SQLite + MemoryStorage, no external services needed."""
+import asyncio
 import os
 
 # Override settings before any app imports
@@ -21,12 +22,8 @@ async def init_demo():
     print("Using MemoryStorage (no MinIO required)")
 
 
-@app.on_event("startup")
-async def demo_startup():
-    await init_demo()
-
-
 if __name__ == "__main__":
+    asyncio.run(init_demo())
     print("=" * 60)
     print("Nano Workshop Agent - Demo Mode")
     print("Using SQLite database (no PostgreSQL required)")

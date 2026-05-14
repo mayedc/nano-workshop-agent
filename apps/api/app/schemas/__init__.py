@@ -304,3 +304,135 @@ class ExpertFeedbackResponse(ExpertFeedbackBase):
     project_id: str
     reviewer_id: str | None
     created_at: datetime
+
+
+# --- Questionnaire Results ---
+
+class QuestionnaireResultBase(BaseModel):
+    name: str
+    respondent_count: int = 0
+    scales: dict[str, Any] = Field(default_factory=dict)
+    descriptive_stats: dict[str, Any] = Field(default_factory=dict)
+    significance_tests: dict[str, Any] | None = None
+    chart_data: dict[str, Any] | None = None
+    extra_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class QuestionnaireResultCreate(QuestionnaireResultBase):
+    project_id: str
+
+
+class QuestionnaireResultUpdate(BaseModel):
+    name: str | None = None
+    respondent_count: int | None = None
+    scales: dict[str, Any] | None = None
+    descriptive_stats: dict[str, Any] | None = None
+    significance_tests: dict[str, Any] | None = None
+    chart_data: dict[str, Any] | None = None
+    extra_metadata: dict[str, Any] | None = None
+
+
+class QuestionnaireResultResponse(QuestionnaireResultBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    created_at: datetime
+
+
+# --- Design Insight ---
+
+class DesignInsightBase(BaseModel):
+    title: str
+    description: str | None = None
+    category: str | None = None
+    confidence: float | None = None
+    supporting_evidence_ids: list[str] = Field(default_factory=list)
+    severity: str | None = None
+
+
+class DesignInsightCreate(DesignInsightBase):
+    project_id: str
+
+
+class DesignInsightUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    category: str | None = None
+    confidence: float | None = None
+    supporting_evidence_ids: list[str] | None = None
+    severity: str | None = None
+
+
+class DesignInsightResponse(DesignInsightBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    created_at: datetime
+
+
+# --- Prototype Review ---
+
+class PrototypeReviewBase(BaseModel):
+    prototype_name: str
+    version: str | None = None
+    feedback: str | None = None
+    usability_score: float | None = None
+    issues_found: list[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
+    review_status: str = "draft"
+
+
+class PrototypeReviewCreate(PrototypeReviewBase):
+    project_id: str
+
+
+class PrototypeReviewUpdate(BaseModel):
+    prototype_name: str | None = None
+    version: str | None = None
+    feedback: str | None = None
+    usability_score: float | None = None
+    issues_found: list[str] | None = None
+    recommendations: list[str] | None = None
+    review_status: str | None = None
+
+
+class PrototypeReviewResponse(PrototypeReviewBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    created_at: datetime
+
+
+# --- Concept Design ---
+
+class ConceptDesignBase(BaseModel):
+    name: str
+    description: str | None = None
+    prompt: str | None = None
+    evidence_ids: list[str] = Field(default_factory=list)
+    confidence: float | None = None
+    review_status: str = "draft"
+
+
+class ConceptDesignCreate(ConceptDesignBase):
+    project_id: str
+
+
+class ConceptDesignUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    prompt: str | None = None
+    evidence_ids: list[str] | None = None
+    confidence: float | None = None
+    review_status: str | None = None
+
+
+class ConceptDesignResponse(ConceptDesignBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    created_at: datetime

@@ -45,6 +45,28 @@ export const api = {
 
   // Exports
   listExports: () => fetcher<ExportRecord[]>("/api/exports"),
+  listProjectExports: (projectId: string) =>
+    fetcher<ExportRecord[]>(`/api/exports/project/${projectId}`),
+  generateExport: async (projectId: string, format: string) => {
+    const url = `${API_BASE}/api/exports/generate/${projectId}?format=${format}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(err || `Export failed`);
+    }
+    const blob = await response.blob();
+    const disposition = response.headers.get("Content-Disposition");
+    const filenameMatch = disposition?.match(/filename="(.+)"/);
+    const filename = filenameMatch?.[1] || `export.${format === "csv" ? "zip" : format}`;
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(objectUrl);
+  },
 
   // Agent Runs
   listAgentRuns: () => fetcher<AgentRun[]>("/api/runs"),

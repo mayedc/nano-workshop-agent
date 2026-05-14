@@ -70,6 +70,10 @@ class Project(Base):
     agent_runs: Mapped[list["AgentRun"]] = relationship("AgentRun", back_populates="project")
     exports: Mapped[list["ExportRecord"]] = relationship("ExportRecord", back_populates="project")
     feedback: Mapped[list["ExpertFeedback"]] = relationship("ExpertFeedback", back_populates="project")
+    questionnaire_results: Mapped[list["QuestionnaireResult"]] = relationship("QuestionnaireResult", back_populates="project")
+    design_insights: Mapped[list["DesignInsight"]] = relationship("DesignInsight", back_populates="project")
+    prototype_reviews: Mapped[list["PrototypeReview"]] = relationship("PrototypeReview", back_populates="project")
+    concept_designs: Mapped[list["ConceptDesign"]] = relationship("ConceptDesign", back_populates="project")
 
 
 class Asset(Base):
@@ -203,3 +207,69 @@ class ExpertFeedback(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="feedback")
+
+
+class QuestionnaireResult(Base):
+    __tablename__ = "questionnaire_results"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    respondent_count: Mapped[int] = mapped_column(Integer, default=0)
+    scales: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    descriptive_stats: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    significance_tests: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    chart_data: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    extra_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    project: Mapped["Project"] = relationship("Project", back_populates="questionnaire_results")
+
+
+class DesignInsight(Base):
+    __tablename__ = "design_insights"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    category: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    confidence: Mapped[float | None] = mapped_column(nullable=True)
+    supporting_evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
+    severity: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    project: Mapped["Project"] = relationship("Project", back_populates="design_insights")
+
+
+class PrototypeReview(Base):
+    __tablename__ = "prototype_reviews"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
+    prototype_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    feedback: Mapped[str] = mapped_column(Text, nullable=True)
+    usability_score: Mapped[float | None] = mapped_column(nullable=True)
+    issues_found: Mapped[list[str]] = mapped_column(JSON, default=list)
+    recommendations: Mapped[list[str]] = mapped_column(JSON, default=list)
+    review_status: Mapped[str] = mapped_column(String(32), default="draft")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    project: Mapped["Project"] = relationship("Project", back_populates="prototype_reviews")
+
+
+class ConceptDesign(Base):
+    __tablename__ = "concept_designs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
+    confidence: Mapped[float | None] = mapped_column(nullable=True)
+    review_status: Mapped[str] = mapped_column(String(32), default="draft")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    project: Mapped["Project"] = relationship("Project", back_populates="concept_designs")

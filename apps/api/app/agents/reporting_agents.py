@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from app.agents.base import AgentContext, AgentResult, BaseWorkshopAgent
 from app.providers.base import ProviderRegistry
 
@@ -122,33 +124,60 @@ class IterationAgent(BaseWorkshopAgent):
 
 class ReportGenerationAgent(BaseWorkshopAgent):
     name = "ReportGenerationAgent"
-    description = "Generates structured academic reports from all analysis outputs."
+    description = "Generates structured academic reports from all analysis outputs with 12 standard sections."
 
     async def run(self, context: AgentContext) -> AgentResult:
         llm = ProviderRegistry.llm()
-        insights = context.inputs.get("insights", [])
+        codes = context.inputs.get("codes", [])
         themes = context.inputs.get("themes", [])
+        insights = context.inputs.get("insights", [])
+        requirements = context.inputs.get("requirements", [])
+        concepts = context.inputs.get("concepts", [])
+        questionnaire = context.inputs.get("questionnaire_results", [])
+        feedback = context.inputs.get("expert_feedback", [])
+        assets = context.inputs.get("assets", [])
+        evidence = context.inputs.get("evidence", [])
 
         prompt = (
-            f"Generate an academic report from {len(insights)} insights and {len(themes)} themes. "
-            f"Include executive summary, methodology, findings, and recommendations."
+            f"Synthesize an executive summary from: {len(themes)} themes, {len(insights)} insights, "
+            f"{len(requirements)} requirements. Keep it under 300 words."
         )
-        response = await llm.generate(prompt)
+        exec_summary = await llm.generate(prompt)
+
+        sections = [
+            {"title": "1. Introduction", "content": "This report presents findings from the Nano Workshop Agent analysis pipeline."},
+            {"title": "2. Workshop Methodology", "content": "Mixed-methods approach combining qualitative coding, thematic analysis, quantitative statistics, and design insight generation."},
+            {"title": "3. Data Sources", "content": f"{len(assets)} assets processed, yielding {len(evidence)} evidence records."},
+            {"title": "4. Preprocessing Pipeline", "content": f"Data extracted via multimodal preprocessing: text, PDF, image, audio, video, table, and 3D model processors."},
+            {"title": "5. Qualitative Analysis", "content": f"{len(codes)} codes applied across evidence, {len(themes)} themes extracted."},
+            {"title": "6. Quantitative Analysis", "content": f"{len(questionnaire)} questionnaire(s) analyzed." if questionnaire else "No quantitative data available."},
+            {"title": "7. Design Insights", "content": f"{len(insights)} design insights generated from coded data."},
+            {"title": "8. Prototype Review", "content": f"{len(requirements)} requirements tracked."},
+            {"title": "9. Expert Feedback and Iteration", "content": f"{len(feedback)} expert review actions recorded."},
+            {"title": "10. Design Guidelines", "content": f"{len(concepts)} design concepts proposed."},
+            {"title": "11. Conclusion", "content": "See design guidelines and recommendations for actionable next steps."},
+            {"title": "12. Appendix", "content": "Full data tables available in export formats: DOCX, PPTX, JSON, CSV."},
+        ]
 
         return AgentResult(
             agent_name=self.name,
             status="completed",
             outputs={
-                "report_sections": [
-                    {"title": "Executive Summary", "content": response[:500]},
-                    {"title": "Methodology", "content": "Mixed-methods approach..."},
-                    {"title": "Qualitative Findings", "content": f"{len(themes)} themes identified."},
-                    {"title": "Quantitative Findings", "content": "Statistically significant results..."},
-                    {"title": "Design Insights", "content": f"{len(insights)} insights generated."},
-                    {"title": "Recommendations", "content": "..."},
-                ],
-                "export_formats": ["docx", "pdf", "pptx", "json"],
+                "executive_summary": exec_summary[:500],
+                "report_sections": sections,
+                "export_formats": ["docx", "pptx", "json", "csv"],
                 "page_estimate": 25,
+                "data_summary": {
+                    "assets": len(assets),
+                    "evidence": len(evidence),
+                    "codes": len(codes),
+                    "themes": len(themes),
+                    "insights": len(insights),
+                    "requirements": len(requirements),
+                    "concepts": len(concepts),
+                    "questionnaires": len(questionnaire),
+                    "feedback": len(feedback),
+                },
             },
             evidence_ids=["ev-report-1"],
             confidence=0.94,
@@ -157,20 +186,31 @@ class ReportGenerationAgent(BaseWorkshopAgent):
 
 class ExportAgent(BaseWorkshopAgent):
     name = "ExportAgent"
-    description = "Exports project artifacts to various formats."
+    description = "Exports project artifacts to DOCX, PPTX, JSON, and CSV formats."
 
     async def run(self, context: AgentContext) -> AgentResult:
-        formats = context.inputs.get("formats", ["json"])
+        formats: list[str] = context.inputs.get("formats", ["json", "docx", "pptx", "csv"])
+        report_sections = context.inputs.get("report_sections", [])
+
+        exported_files: list[dict] = []
+        for fmt in formats:
+            ext_map = {"docx": "docx", "pptx": "pptx", "json": "json", "csv": "zip"}
+            ext = ext_map.get(fmt, fmt)
+            exported_files.append({
+                "format": fmt,
+                "url": f"/api/exports/generate/{context.project_id}?format={fmt}",
+                "filename": f"report_{context.project_id[:8]}.{ext}",
+            })
+
         return AgentResult(
             agent_name=self.name,
             status="completed",
             outputs={
-                "exported_files": [
-                    {"format": f, "url": f"/exports/project/{context.project_id}/report.{f}"}
-                    for f in formats
-                ],
+                "exported_files": exported_files,
+                "total_sections": len(report_sections),
+                "formats_generated": formats,
                 "reproducibility_hash": "sha256:abc123",
-                "timestamp": "2024-01-01T00:00:00Z",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             evidence_ids=["ev-export-1"],
             confidence=0.98,

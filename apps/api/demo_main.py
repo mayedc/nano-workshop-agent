@@ -13,6 +13,7 @@ from app.services.storage import MemoryStorage, set_storage
 
 async def init_demo():
     """Create tables and set up in-memory storage."""
+    import app.models  # ensure all models are registered with Base.metadata
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     set_storage(MemoryStorage())

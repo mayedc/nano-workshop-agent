@@ -192,3 +192,55 @@ export const REVIEW_ACTIONS = [
   "comment",
   "request_rerun",
 ] as const;
+
+export interface QuestionnaireResult {
+  id: string;
+  project_id: string;
+  name: string;
+  respondent_count: number;
+  scales: Record<string, unknown>;
+  descriptive_stats: Record<string, unknown>;
+  significance_tests: Record<string, unknown> | null;
+  chart_data: Record<string, unknown> | null;
+  extra_metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface DesignInsightRecord {
+  id: string;
+  project_id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  confidence: number | null;
+  supporting_evidence_ids: string[];
+  severity: string | null;
+  created_at: string;
+}
+
+export interface PrototypeReviewRecord {
+  id: string;
+  project_id: string;
+  prototype_name: string;
+  version: string | null;
+  feedback: string | null;
+  usability_score: number | null;
+  issues_found: string[];
+  recommendations: string[];
+  review_status: string;
+  created_at: string;
+}
+
+export interface ConceptDesignRecord {
+  id: string;
+  project_id: string;
+  name: string;
+  description: string | null;
+  prompt: string | null;
+  evidence_ids: string[];
+  confidence: number | null;
+  review_status: string;
+  created_at: string;
+}
+
+export const EXPORT_FORMATS = ["docx", "pptx", "json", "csv"] as const;

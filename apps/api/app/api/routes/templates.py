@@ -76,7 +76,9 @@ async def update_template(
     db_obj = await template_service.get(db, template_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Template not found")
-    return await template_service.update(db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True))
+    return await template_service.update(
+        db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+    )
 
 
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)

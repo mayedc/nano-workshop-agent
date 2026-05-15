@@ -1,6 +1,6 @@
 import pytest
 
-from app.agents.base import AgentContext, AgentResult
+from app.agents.base import AgentContext
 from app.agents.mock_agents import (
     DesignInsightAgent,
     GoalUnderstandingAgent,

@@ -70,7 +70,9 @@ async def generate_export(
 ):
     """Generate an export file for a project."""
     if format not in FORMAT_MIME:
-        raise HTTPException(status_code=422, detail=f"Unsupported format. Choose: {list(FORMAT_MIME.keys())}")
+        raise HTTPException(
+            status_code=422, detail=f"Unsupported format. Choose: {list(FORMAT_MIME.keys())}"
+        )
 
     # Gather all project data
     project = await db.get(Project, project_id)
@@ -114,6 +116,7 @@ async def generate_export(
         if not tables:
             raise HTTPException(status_code=404, detail="No data to export as CSV")
         import zipfile
+
         buf = __import__("io").BytesIO()
         with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
             for name, csv_bytes in tables.items():
@@ -124,12 +127,15 @@ async def generate_export(
         raise HTTPException(status_code=422, detail="Unsupported format")
 
     # Store export record
-    rec = await export_service.create(db, obj_in={
-        "project_id": project_id,
-        "format": format,
-        "file_url": f"/api/exports/download/{project_id}/{filename}",
-        "config": {"filename": filename, "size_bytes": len(content)},
-    })
+    rec = await export_service.create(
+        db,
+        obj_in={
+            "project_id": project_id,
+            "format": format,
+            "file_url": f"/api/exports/download/{project_id}/{filename}",
+            "config": {"filename": filename, "size_bytes": len(content)},
+        },
+    )
 
     return Response(
         content=content,

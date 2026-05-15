@@ -11,7 +11,9 @@ class ImageProcessor(BaseProcessor):
         "image/webp",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         vision = ProviderRegistry.vision()
         ocr = ProviderRegistry.ocr()
         embedder = ProviderRegistry.embedding()
@@ -27,7 +29,9 @@ class ImageProcessor(BaseProcessor):
 
         # Design element extraction (via LLM from caption + OCR)
         llm = ProviderRegistry.llm()
-        design_prompt = f"Describe design elements in this image. Caption: {caption}. OCR: {ocr_text[:500]}"
+        design_prompt = (
+            f"Describe design elements in this image. Caption: {caption}. OCR: {ocr_text[:500]}"
+        )
         design_features = await llm.generate(design_prompt)
 
         # Embedding

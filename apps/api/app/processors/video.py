@@ -9,7 +9,9 @@ class VideoProcessor(BaseProcessor):
         "video/mp4",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         stt = ProviderRegistry.stt()
         vision = ProviderRegistry.vision()
         llm = ProviderRegistry.llm()
@@ -27,7 +29,9 @@ class VideoProcessor(BaseProcessor):
         scenes = await llm.generate(scene_prompt)
 
         # Multimodal summary
-        summary_prompt = f"Summarize this video. Audio: {transcript_text[:1000]}. Visual: {scenes[:500]}"
+        summary_prompt = (
+            f"Summarize this video. Audio: {transcript_text[:1000]}. Visual: {scenes[:500]}"
+        )
         summary = await llm.generate(summary_prompt)
 
         # Embedding

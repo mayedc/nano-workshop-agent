@@ -33,6 +33,8 @@ export const api = {
       method: "POST",
       body: formData,
     }),
+  deleteAsset: (assetId: string) =>
+    fetcher<void>(`/api/assets/${assetId}`, { method: "DELETE" }),
   processAssetSync: (assetId: string, projectId: string) =>
     fetcher<unknown>(`/api/assets/${assetId}/process-sync?project_id=${projectId}`, {
       method: "POST",
@@ -121,9 +123,9 @@ export const api = {
 
   // Project Config
   getProjectConfig: (id: string) =>
-    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string } }>(`/api/projects/${id}/config`),
-  updateProjectConfig: (id: string, data: { agents?: Array<{ id?: string; name: string; model?: string }>; llm_config?: { provider?: string; api_key?: string; model?: string } }) =>
-    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string } }>(`/api/projects/${id}/config`, { method: "PUT", body: JSON.stringify(data) }),
+    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string; base_url?: string } }>(`/api/projects/${id}/config`),
+  updateProjectConfig: (id: string, data: { agents?: Array<{ id?: string; name: string; model?: string }>; llm_config?: { provider?: string; api_key?: string; model?: string; base_url?: string } }) =>
+    fetcher<{ agents: Array<{ id?: string; name: string; model?: string }>; llm_config: { provider?: string; api_key?: string; model?: string; base_url?: string } }>(`/api/projects/${id}/config`, { method: "PUT", body: JSON.stringify(data) }),
 
   // Data Analysis
   analyzeProjectData: (projectId: string, data: { asset_id: string; user_question: string }) =>
@@ -146,6 +148,13 @@ export const api = {
         error?: string | null;
       } | null;
     }>(`/api/projects/${projectId}/analyze`, { method: "POST", body: JSON.stringify(data) }),
+
+  // Workshop Planner
+  planWorkshop: (projectId: string, data: { asset_ids: string[]; workshop_purpose: string }) =>
+    fetcher<import("@/types").WorkshopPlanResponse>(`/api/projects/${projectId}/workshop-planner/plan`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
   // Health
   health: () => fetcher<{ status: string }>("/api/health/"),

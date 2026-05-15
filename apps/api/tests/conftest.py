@@ -30,6 +30,7 @@ def override_get_db(db):
         yield db
 
     from app.main import app
+
     app.dependency_overrides[original_get_db] = _override
     yield
     app.dependency_overrides.clear()

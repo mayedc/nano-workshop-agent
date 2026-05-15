@@ -34,7 +34,9 @@ class BaseProcessor(ABC):
     supported_types: set[str] = set()
 
     @abstractmethod
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         pass
 
     def can_process(self, mime_type: str) -> bool:

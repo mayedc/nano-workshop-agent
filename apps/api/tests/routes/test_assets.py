@@ -2,7 +2,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
-from app.services.storage import MemoryStorage, detect_file_type, set_storage
+from app.services.storage import MemoryStorage, set_storage
 
 
 @pytest.fixture(autouse=True)

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.encryption import decrypt_value, encrypt_value
+from app.core.encryption import encrypt_value
 from app.db.session import get_db
 from app.schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 from app.services import project as project_service
@@ -62,7 +62,9 @@ async def update_project(
     db_obj = await project_service.get(db, project_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Project not found")
-    return await project_service.update(db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True))
+    return await project_service.update(
+        db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+    )
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)

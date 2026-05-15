@@ -1,6 +1,6 @@
 import pytest
 
-from app.templates.dsl import Ontology, WorkflowStep, WorkshopTemplateDSL
+from app.templates.dsl import WorkflowStep, WorkshopTemplateDSL
 from app.templates.loader import TemplateRegistry, load_and_validate_templates
 
 
@@ -90,4 +90,5 @@ def test_dsl_invalid_step_status():
 def test_dsl_invalid_report_type():
     with pytest.raises(ValueError):
         from app.templates.dsl import ReportSection
+
         ReportSection(title="Bad", type="invalid", source_steps=[])

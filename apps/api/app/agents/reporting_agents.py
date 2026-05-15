@@ -47,31 +47,39 @@ class IterationAgent(BaseWorkshopAgent):
             if action == "approve":
                 approved_count += 1
             elif action in ("reject", "request_rerun"):
-                rerun_targets.append({
-                    "target_id": fb.get("target_id"),
-                    "target_type": fb.get("target_type"),
-                    "reason": fb.get("comment", f"Rerun requested via {action}"),
-                })
+                rerun_targets.append(
+                    {
+                        "target_id": fb.get("target_id"),
+                        "target_type": fb.get("target_type"),
+                        "reason": fb.get("comment", f"Rerun requested via {action}"),
+                    }
+                )
             elif action == "revise":
-                revised_items.append({
-                    "target_id": fb.get("target_id"),
-                    "target_type": fb.get("target_type"),
-                    "suggested_revision": fb.get("suggested_revision", {}),
-                    "comment": fb.get("comment", ""),
-                })
+                revised_items.append(
+                    {
+                        "target_id": fb.get("target_id"),
+                        "target_type": fb.get("target_type"),
+                        "suggested_revision": fb.get("suggested_revision", {}),
+                        "comment": fb.get("comment", ""),
+                    }
+                )
             elif action == "merge":
-                rerun_targets.append({
-                    "target_id": fb.get("target_id"),
-                    "target_type": fb.get("target_type"),
-                    "reason": fb.get("comment", "Merge requested"),
-                    "merge_ids": fb.get("suggested_revision", {}).get("merge_ids", []),
-                })
+                rerun_targets.append(
+                    {
+                        "target_id": fb.get("target_id"),
+                        "target_type": fb.get("target_type"),
+                        "reason": fb.get("comment", "Merge requested"),
+                        "merge_ids": fb.get("suggested_revision", {}).get("merge_ids", []),
+                    }
+                )
             elif action == "split":
-                rerun_targets.append({
-                    "target_id": fb.get("target_id"),
-                    "target_type": fb.get("target_type"),
-                    "reason": fb.get("comment", "Split requested"),
-                })
+                rerun_targets.append(
+                    {
+                        "target_id": fb.get("target_id"),
+                        "target_type": fb.get("target_type"),
+                        "reason": fb.get("comment", "Split requested"),
+                    }
+                )
 
         total = len(feedback_items)
         conflict = any(
@@ -124,7 +132,9 @@ class IterationAgent(BaseWorkshopAgent):
 
 class ReportGenerationAgent(BaseWorkshopAgent):
     name = "ReportGenerationAgent"
-    description = "Generates structured academic reports from all analysis outputs with 12 standard sections."
+    description = (
+        "Generates structured academic reports from all analysis outputs with 12 standard sections."
+    )
 
     async def run(self, context: AgentContext) -> AgentResult:
         llm = ProviderRegistry.llm()
@@ -145,18 +155,56 @@ class ReportGenerationAgent(BaseWorkshopAgent):
         exec_summary = await llm.generate(prompt)
 
         sections = [
-            {"title": "1. Introduction", "content": "This report presents findings from the Nano Workshop Agent analysis pipeline."},
-            {"title": "2. Workshop Methodology", "content": "Mixed-methods approach combining qualitative coding, thematic analysis, quantitative statistics, and design insight generation."},
-            {"title": "3. Data Sources", "content": f"{len(assets)} assets processed, yielding {len(evidence)} evidence records."},
-            {"title": "4. Preprocessing Pipeline", "content": f"Data extracted via multimodal preprocessing: text, PDF, image, audio, video, table, and 3D model processors."},
-            {"title": "5. Qualitative Analysis", "content": f"{len(codes)} codes applied across evidence, {len(themes)} themes extracted."},
-            {"title": "6. Quantitative Analysis", "content": f"{len(questionnaire)} questionnaire(s) analyzed." if questionnaire else "No quantitative data available."},
-            {"title": "7. Design Insights", "content": f"{len(insights)} design insights generated from coded data."},
-            {"title": "8. Prototype Review", "content": f"{len(requirements)} requirements tracked."},
-            {"title": "9. Expert Feedback and Iteration", "content": f"{len(feedback)} expert review actions recorded."},
-            {"title": "10. Design Guidelines", "content": f"{len(concepts)} design concepts proposed."},
-            {"title": "11. Conclusion", "content": "See design guidelines and recommendations for actionable next steps."},
-            {"title": "12. Appendix", "content": "Full data tables available in export formats: DOCX, PPTX, JSON, CSV."},
+            {
+                "title": "1. Introduction",
+                "content": "This report presents findings from the Nano Workshop Agent analysis pipeline.",
+            },
+            {
+                "title": "2. Workshop Methodology",
+                "content": "Mixed-methods approach combining qualitative coding, thematic analysis, quantitative statistics, and design insight generation.",
+            },
+            {
+                "title": "3. Data Sources",
+                "content": f"{len(assets)} assets processed, yielding {len(evidence)} evidence records.",
+            },
+            {
+                "title": "4. Preprocessing Pipeline",
+                "content": "Data extracted via multimodal preprocessing: text, PDF, image, audio, video, table, and 3D model processors.",
+            },
+            {
+                "title": "5. Qualitative Analysis",
+                "content": f"{len(codes)} codes applied across evidence, {len(themes)} themes extracted.",
+            },
+            {
+                "title": "6. Quantitative Analysis",
+                "content": f"{len(questionnaire)} questionnaire(s) analyzed."
+                if questionnaire
+                else "No quantitative data available.",
+            },
+            {
+                "title": "7. Design Insights",
+                "content": f"{len(insights)} design insights generated from coded data.",
+            },
+            {
+                "title": "8. Prototype Review",
+                "content": f"{len(requirements)} requirements tracked.",
+            },
+            {
+                "title": "9. Expert Feedback and Iteration",
+                "content": f"{len(feedback)} expert review actions recorded.",
+            },
+            {
+                "title": "10. Design Guidelines",
+                "content": f"{len(concepts)} design concepts proposed.",
+            },
+            {
+                "title": "11. Conclusion",
+                "content": "See design guidelines and recommendations for actionable next steps.",
+            },
+            {
+                "title": "12. Appendix",
+                "content": "Full data tables available in export formats: DOCX, PPTX, JSON, CSV.",
+            },
         ]
 
         return AgentResult(
@@ -196,11 +244,13 @@ class ExportAgent(BaseWorkshopAgent):
         for fmt in formats:
             ext_map = {"docx": "docx", "pptx": "pptx", "json": "json", "csv": "zip"}
             ext = ext_map.get(fmt, fmt)
-            exported_files.append({
-                "format": fmt,
-                "url": f"/api/exports/generate/{context.project_id}?format={fmt}",
-                "filename": f"report_{context.project_id[:8]}.{ext}",
-            })
+            exported_files.append(
+                {
+                    "format": fmt,
+                    "url": f"/api/exports/generate/{context.project_id}?format={fmt}",
+                    "filename": f"report_{context.project_id[:8]}.{ext}",
+                }
+            )
 
         return AgentResult(
             agent_name=self.name,

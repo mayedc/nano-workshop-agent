@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, UploadCloud, File, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, UploadCloud, File, CheckCircle, AlertCircle, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 
 const roleLabels: Record<string, string> = {
@@ -43,6 +43,15 @@ export default function UploadPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["assets", id] });
       setToast({ message: "Upload complete", type: "success" });
+    },
+    onError: (e: Error) => setToast({ message: e.message, type: "error" }),
+  });
+
+  const deleteAsset = useMutation({
+    mutationFn: (assetId: string) => api.deleteAsset(assetId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assets", id] });
+      setToast({ message: "Asset deleted", type: "success" });
     },
     onError: (e: Error) => setToast({ message: e.message, type: "error" }),
   });
@@ -128,6 +137,14 @@ export default function UploadPage() {
                     <Progress value={uploads[a.filename]} max={100} className="w-24" />
                   )}
                   {processingBadge(a.processing_status)}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={deleteAsset.isPending}
+                    onClick={() => { if (confirm(`Delete "${a.filename}"?`)) deleteAsset.mutate(a.id); }}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
                 </div>
               </div>
             ))

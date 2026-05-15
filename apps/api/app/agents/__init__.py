@@ -11,8 +11,8 @@ from app.agents.core_agents import (
     MetadataFusionAgent,
     PreprocessingAgent,
     ProjectSetupAgent,
-    WorkshopPlanningAgent,
 )
+from app.agents.workshop_planner_agent import WorkshopPlannerAgent
 from app.agents.design_agents import (
     DesignConceptAgent,
     DesignInsightAgent,
@@ -59,7 +59,7 @@ __all__ = [
     "WorkflowPlan",
     "WorkflowResult",
     "WorkflowStep",
-    "WorkshopPlanningAgent",
+    "WorkshopPlannerAgent",
     "agent_registry",
     "tool_registry",
 ]

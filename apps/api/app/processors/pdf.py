@@ -11,7 +11,9 @@ class PDFProcessor(BaseProcessor):
         "application/msword",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         # For mock: treat as text extraction via OCR/LLM
         ocr = ProviderRegistry.ocr()
         llm = ProviderRegistry.llm()
@@ -24,15 +26,17 @@ class PDFProcessor(BaseProcessor):
         section_response = await llm.generate(section_prompt)
 
         # Chunking
-        chunks = [extracted_text[i:i+1000] for i in range(0, len(extracted_text), 900)]
+        chunks = [extracted_text[i : i + 1000] for i in range(0, len(extracted_text), 900)]
 
         evidence = []
         for i, chunk in enumerate(chunks[:5]):
-            evidence.append({
-                "type": "text",
-                "content": chunk,
-                "metadata": {"chunk_index": i, "source": "pdf_extraction"},
-            })
+            evidence.append(
+                {
+                    "type": "text",
+                    "content": chunk,
+                    "metadata": {"chunk_index": i, "source": "pdf_extraction"},
+                }
+            )
 
         return ProcessingResult(
             normalized_text=extracted_text,

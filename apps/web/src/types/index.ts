@@ -244,3 +244,28 @@ export interface ConceptDesignRecord {
 }
 
 export const EXPORT_FORMATS = ["docx", "pptx", "json", "csv"] as const;
+
+export interface WorkshopPlanRequest {
+  asset_ids: string[];
+  workshop_purpose: string;
+}
+
+export interface SuggestedWorkflowStep {
+  id: number;
+  name: string;
+  agent_name: string;
+  description: string;
+  depends_on: number[];
+  expected_output: string;
+}
+
+export interface WorkshopPlanResponse {
+  project_id: string;
+  workshop_title: string;
+  reasoning: string;
+  suggested_modules: string[];
+  workflow_steps: SuggestedWorkflowStep[];
+  estimated_duration: string;
+  confidence: string;
+  assumptions: string[];
+}

@@ -11,7 +11,9 @@ class TextProcessor(BaseProcessor):
         "text/csv",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         text = file_bytes.decode("utf-8", errors="replace")
 
         # Section detection (simple heuristic: headers by # or blank lines)
@@ -29,14 +31,16 @@ class TextProcessor(BaseProcessor):
 
         evidence = []
         for i, chunk in enumerate(chunks[:5]):
-            evidence.append({
-                "type": "text",
-                "content": chunk,
-                "metadata": {
-                    "chunk_index": i,
-                    "embedding_dim": len(embeddings[i]) if i < len(embeddings) else 0,
-                },
-            })
+            evidence.append(
+                {
+                    "type": "text",
+                    "content": chunk,
+                    "metadata": {
+                        "chunk_index": i,
+                        "embedding_dim": len(embeddings[i]) if i < len(embeddings) else 0,
+                    },
+                }
+            )
 
         return ProcessingResult(
             normalized_text=normalized,

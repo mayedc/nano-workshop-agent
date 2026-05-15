@@ -36,8 +36,16 @@ class QualitativeAnalysisAgent(BaseWorkshopAgent):
             outputs={
                 "codes": ["trust", "safety", "visibility", "intention"],
                 "themes": [
-                    {"name": "Trust Building", "description": "How eHMI builds trust", "code_count": 12},
-                    {"name": "Safety Perception", "description": "Perceived safety factors", "code_count": 8},
+                    {
+                        "name": "Trust Building",
+                        "description": "How eHMI builds trust",
+                        "code_count": 12,
+                    },
+                    {
+                        "name": "Safety Perception",
+                        "description": "Perceived safety factors",
+                        "code_count": 8,
+                    },
                 ],
                 "evidence_count": len(evidence),
             },
@@ -72,8 +80,8 @@ class DesignInsightAgent(BaseWorkshopAgent):
     description = "Generates design insights and recommendations from analysis results."
 
     async def run(self, context: AgentContext) -> AgentResult:
-        themes = context.inputs.get("themes", [])
-        quant = context.inputs.get("quantitative", {})
+        _themes = context.inputs.get("themes", [])
+        _quant = context.inputs.get("quantitative", {})
         return AgentResult(
             agent_name=self.name,
             status="completed",
@@ -137,8 +145,8 @@ def register_mock_agents(registry: Any) -> None:
         MetadataFusionAgent,
         PreprocessingAgent,
         ProjectSetupAgent,
-        WorkshopPlanningAgent,
     )
+    from app.agents.workshop_planner_agent import WorkshopPlannerAgent
     from app.agents.design_agents import (
         DesignConceptAgent,
         DesignInsightAgent,
@@ -166,7 +174,7 @@ def register_mock_agents(registry: Any) -> None:
     registry.register(PreprocessingAgent())
     registry.register(MetadataFusionAgent())
     registry.register(GoalUnderstandingAgent())
-    registry.register(WorkshopPlanningAgent())
+    registry.register(WorkshopPlannerAgent())
 
     # Analysis agents
     registry.register(QualitativeAnalysisAgent())

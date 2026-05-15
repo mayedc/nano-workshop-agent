@@ -11,7 +11,9 @@ class Model3DProcessor(BaseProcessor):
         "application/octet-stream",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         vision = ProviderRegistry.vision()
         llm = ProviderRegistry.llm()
 

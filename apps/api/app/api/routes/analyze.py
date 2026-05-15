@@ -187,44 +187,52 @@ async def analyze_project_data(
     # 4. DataProfileAgent
     profile_agent = DataProfileAgent()
     profile_result = await profile_agent.run(context)
-    steps.append({
-        "agent": profile_agent.name,
-        "status": profile_result.status,
-        "output": profile_result.outputs,
-    })
+    steps.append(
+        {
+            "agent": profile_agent.name,
+            "status": profile_result.status,
+            "output": profile_result.outputs,
+        }
+    )
 
     # 5. PlannerAgent
     context.inputs["data_profile"] = profile_result.outputs
     planner_agent = PlannerAgent()
     plan_result = await planner_agent.run(context)
-    steps.append({
-        "agent": planner_agent.name,
-        "status": plan_result.status,
-        "output": plan_result.outputs,
-    })
+    steps.append(
+        {
+            "agent": planner_agent.name,
+            "status": plan_result.status,
+            "output": plan_result.outputs,
+        }
+    )
 
     # 6. CodeAgent
     context.inputs["analysis_plan"] = plan_result.outputs
     code_agent = CodeAgent()
     code_result = await code_agent.run(context)
-    steps.append({
-        "agent": code_agent.name,
-        "status": code_result.status,
-        "output": code_result.outputs,
-    })
+    steps.append(
+        {
+            "agent": code_agent.name,
+            "status": code_result.status,
+            "output": code_result.outputs,
+        }
+    )
 
     code = code_result.outputs.get("code", "")
 
     # 7. Execute code with repair loop
     execution = _execute_pandas_code(code, df)
-    steps.append({
-        "agent": "Executor",
-        "status": "failed" if execution.error else "completed",
-        "output": execution.result,
-        "error": execution.error,
-        "stdout": execution.stdout,
-        "result_type": execution.result_type,
-    })
+    steps.append(
+        {
+            "agent": "Executor",
+            "status": "failed" if execution.error else "completed",
+            "output": execution.result,
+            "error": execution.error,
+            "stdout": execution.stdout,
+            "result_type": execution.result_type,
+        }
+    )
 
     max_repairs = 2
     repair_count = 0
@@ -233,34 +241,46 @@ async def analyze_project_data(
         context.inputs["error"] = execution.error
         repair_agent = RepairAgent()
         repair_result = await repair_agent.run(context)
-        steps.append({
-            "agent": repair_agent.name,
-            "status": repair_result.status,
-            "output": repair_result.outputs,
-        })
+        steps.append(
+            {
+                "agent": repair_agent.name,
+                "status": repair_result.status,
+                "output": repair_result.outputs,
+            }
+        )
         code = repair_result.outputs.get("code", code)
         execution = _execute_pandas_code(code, df)
-        steps.append({
-            "agent": "Executor",
-            "status": "failed" if execution.error else "completed",
-            "output": execution.result,
-            "error": execution.error,
-            "stdout": execution.stdout,
-            "result_type": execution.result_type,
-        })
+        steps.append(
+            {
+                "agent": "Executor",
+                "status": "failed" if execution.error else "completed",
+                "output": execution.result,
+                "error": execution.error,
+                "stdout": execution.stdout,
+                "result_type": execution.result_type,
+            }
+        )
         repair_count += 1
 
     # 8. ResultExplainerAgent
-    context.inputs["execution_result"] = execution.result if execution.result else {"error": execution.error}
+    context.inputs["execution_result"] = (
+        execution.result if execution.result else {"error": execution.error}
+    )
     explainer_agent = ResultExplainerAgent()
     explain_result = await explainer_agent.run(context)
-    steps.append({
-        "agent": explainer_agent.name,
-        "status": explain_result.status,
-        "output": explain_result.outputs,
-    })
+    steps.append(
+        {
+            "agent": explainer_agent.name,
+            "status": explain_result.status,
+            "output": explain_result.outputs,
+        }
+    )
 
-    final_answer = explain_result.outputs.get("summary", "") if isinstance(explain_result.outputs, dict) else str(explain_result.outputs)
+    final_answer = (
+        explain_result.outputs.get("summary", "")
+        if isinstance(explain_result.outputs, dict)
+        else str(explain_result.outputs)
+    )
 
     return AnalyzeResponse(
         project_id=project_id,

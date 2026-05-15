@@ -30,9 +30,16 @@ class PrototypeAnalysisAgent(BaseWorkshopAgent):
                 "design_elements": ["button", "display", "indicator_light", "text_label"],
                 "usability_issues": [
                     {"issue": "Small text size", "severity": "medium", "location": "display"},
-                    {"issue": "Unclear state indication", "severity": "high", "location": "indicator"},
+                    {
+                        "issue": "Unclear state indication",
+                        "severity": "high",
+                        "location": "indicator",
+                    },
                 ],
-                "heuristic_violations": ["visibility_of_system_status", "match_between_system_and_real_world"],
+                "heuristic_violations": [
+                    "visibility_of_system_status",
+                    "match_between_system_and_real_world",
+                ],
                 "analysis": response[:500],
             },
             evidence_ids=["ev-proto-1"],
@@ -71,8 +78,16 @@ class DesignInsightAgent(BaseWorkshopAgent):
         ]
 
         requirement_matrix = [
-            {"requirement": "Display must be visible from 10m", "priority": "high", "source": "insight-1"},
-            {"requirement": "Use blue for safe states", "priority": "medium", "source": "insight-1"},
+            {
+                "requirement": "Display must be visible from 10m",
+                "priority": "high",
+                "source": "insight-1",
+            },
+            {
+                "requirement": "Use blue for safe states",
+                "priority": "medium",
+                "source": "insight-1",
+            },
             {"requirement": "Front placement mandatory", "priority": "high", "source": "insight-2"},
         ]
 
@@ -99,7 +114,9 @@ class DesignConceptAgent(BaseWorkshopAgent):
         insights = context.inputs.get("insights", [])
         insight_titles = [i.get("title", "") for i in insights]
 
-        prompt = f"Generate conceptual design descriptions based on these insights: {insight_titles}"
+        prompt = (
+            f"Generate conceptual design descriptions based on these insights: {insight_titles}"
+        )
         response = await llm.generate(prompt)
 
         concepts = [

@@ -33,12 +33,14 @@ class MaterialIntakeAgent(BaseWorkshopAgent):
         assets = context.inputs.get("assets", [])
         validated = []
         for asset in assets:
-            validated.append({
-                "asset_id": asset.get("id"),
-                "type": asset.get("asset_type"),
-                "semantic_role": asset.get("semantic_role"),
-                "valid": True,
-            })
+            validated.append(
+                {
+                    "asset_id": asset.get("id"),
+                    "type": asset.get("asset_type"),
+                    "semantic_role": asset.get("semantic_role"),
+                    "valid": True,
+                }
+            )
 
         return AgentResult(
             agent_name=self.name,
@@ -102,9 +104,7 @@ class GoalUnderstandingAgent(BaseWorkshopAgent):
     async def run(self, context: AgentContext) -> AgentResult:
         llm = ProviderRegistry.llm()
         goal = context.goal or "Understand user needs"
-        prompt = (
-            f"Interpret this research goal and identify expected outputs and analysis modules: {goal}"
-        )
+        prompt = f"Interpret this research goal and identify expected outputs and analysis modules: {goal}"
         response = await llm.generate(prompt)
 
         return AgentResult(
@@ -117,31 +117,13 @@ class GoalUnderstandingAgent(BaseWorkshopAgent):
                     "What design constraints exist?",
                 ],
                 "expected_outputs": ["thematic_map", "requirement_matrix", "design_guidelines"],
-                "selected_modules": ["qualitative_coding", "thematic_analysis", "prototype_analysis"],
+                "selected_modules": [
+                    "qualitative_coding",
+                    "thematic_analysis",
+                    "prototype_analysis",
+                ],
                 "interpretation": response,
             },
             evidence_ids=["ev-goal-1"],
             confidence=0.92,
-        )
-
-
-class WorkshopPlanningAgent(BaseWorkshopAgent):
-    name = "WorkshopPlanningAgent"
-    description = "Plans workshop execution steps based on template and goals."
-
-    async def run(self, context: AgentContext) -> AgentResult:
-        template = context.inputs.get("template", {})
-        steps = template.get("workflow_steps", [])
-
-        return AgentResult(
-            agent_name=self.name,
-            status="completed",
-            outputs={
-                "planned_steps": steps,
-                "estimated_duration_minutes": len(steps) * 15,
-                "human_gates": [s["id"] for s in steps if s.get("status") == "awaiting_input"],
-                "automation_level": "semi_automated",
-            },
-            evidence_ids=["ev-plan-1"],
-            confidence=0.88,
         )

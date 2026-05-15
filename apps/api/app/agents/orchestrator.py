@@ -49,8 +49,6 @@ class WorkflowOrchestrator:
         results: dict[str, WorkflowResult] = {}
         completed_steps: set[str] = set()
 
-        steps_by_id = {s.id: s for s in plan.steps}
-
         async def execute_step(step: WorkflowStep) -> WorkflowResult:
             started_at = datetime.now(timezone.utc)
             agent = self.registry.get(step.agent)

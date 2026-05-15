@@ -1,4 +1,5 @@
 """Demo entry point - uses SQLite + MemoryStorage, no external services needed."""
+
 import asyncio
 import os
 
@@ -6,7 +7,6 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./demo.db")
 
 import uvicorn
-from app.main import app
 from app.db.base import Base
 from app.db.session import engine
 from app.services.storage import MemoryStorage, set_storage
@@ -14,7 +14,6 @@ from app.services.storage import MemoryStorage, set_storage
 
 async def init_demo():
     """Create tables and set up in-memory storage."""
-    import app.models  # ensure all models are registered with Base.metadata
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     set_storage(MemoryStorage())

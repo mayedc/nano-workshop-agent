@@ -61,7 +61,9 @@ async def update_evidence(
     db_obj = await evidence_service.get(db, evidence_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Evidence not found")
-    return await evidence_service.update(db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True))
+    return await evidence_service.update(
+        db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+    )
 
 
 @router.delete("/{evidence_id}", status_code=status.HTTP_204_NO_CONTENT)

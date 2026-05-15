@@ -3,7 +3,6 @@ from typing import Any
 
 from app.core.celery import celery_app
 from app.db.session import AsyncSessionLocal
-from app.models import Evidence
 from app.schemas import EvidenceCreate
 from app.services import asset as asset_service
 from app.services import evidence as evidence_service

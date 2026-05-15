@@ -11,7 +11,9 @@ class TableProcessor(BaseProcessor):
         "application/vnd.ms-excel",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         llm = ProviderRegistry.llm()
 
         # For mock: simulate parsing
@@ -23,23 +25,25 @@ class TableProcessor(BaseProcessor):
             rows = ["col1,col2,col3", "1,2,3", "4,5,6"]
 
         # Schema inference
-        schema_prompt = f"Infer schema for this data (first 5 rows):\n" + "\n".join(rows[:5])
+        schema_prompt = "Infer schema for this data (first 5 rows):\n" + "\n".join(rows[:5])
         schema = await llm.generate(schema_prompt)
 
         # Descriptive statistics
-        stats_prompt = f"Compute descriptive statistics for:\n" + "\n".join(rows[:10])
+        stats_prompt = "Compute descriptive statistics for:\n" + "\n".join(rows[:10])
         stats = await llm.generate(stats_prompt)
 
         # Scale grouping (detect Likert vs continuous vs categorical)
-        scale_prompt = f"Classify variable types in this dataset:\n" + "\n".join(rows[:5])
+        scale_prompt = "Classify variable types in this dataset:\n" + "\n".join(rows[:5])
         scale_groups = await llm.generate(scale_prompt)
 
-        tables = [{
-            "name": filename,
-            "schema": schema[:500],
-            "row_count": len(rows) - 1,
-            "column_count": len(rows[0].split(",")) if rows else 0,
-        }]
+        tables = [
+            {
+                "name": filename,
+                "schema": schema[:500],
+                "row_count": len(rows) - 1,
+                "column_count": len(rows[0].split(",")) if rows else 0,
+            }
+        ]
 
         evidence = [
             {"type": "table_schema", "content": schema, "metadata": {"source": "llm"}},

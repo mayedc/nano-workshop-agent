@@ -2,7 +2,6 @@ import mimetypes
 from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
-from typing import Any
 
 from minio import Minio
 

@@ -1,5 +1,4 @@
 import json
-from typing import Any
 
 from app.agents.base import AgentContext, AgentResult, BaseWorkshopAgent
 from app.providers.factory import create_llm_provider
@@ -86,7 +85,9 @@ Provide a structured JSON response with these keys:
 Return ONLY valid JSON."""
 
         try:
-            raw = await llm.generate(prompt, system="You are a data profiling expert. Output ONLY valid JSON.")
+            raw = await llm.generate(
+                prompt, system="You are a data profiling expert. Output ONLY valid JSON."
+            )
             output = json.loads(_extract_json(raw))
         except Exception as exc:
             output = {"error": str(exc), "raw": raw if "raw" in locals() else None}
@@ -100,7 +101,9 @@ Return ONLY valid JSON."""
 
 class PlannerAgent(BaseWorkshopAgent):
     name = "PlannerAgent"
-    description = "Generates a detailed analysis plan based on the user's question and data profile."
+    description = (
+        "Generates a detailed analysis plan based on the user's question and data profile."
+    )
 
     async def run(self, context: AgentContext) -> AgentResult:
         llm = create_llm_provider(context.project_config)
@@ -132,7 +135,9 @@ Provide a structured JSON response with:
 Return ONLY valid JSON."""
 
         try:
-            raw = await llm.generate(prompt, system="You are an analytics planner. Output ONLY valid JSON.")
+            raw = await llm.generate(
+                prompt, system="You are an analytics planner. Output ONLY valid JSON."
+            )
             output = json.loads(_extract_json(raw))
         except Exception as exc:
             output = {"error": str(exc), "raw": raw if "raw" in locals() else None}
@@ -146,12 +151,13 @@ Return ONLY valid JSON."""
 
 class CodeAgent(BaseWorkshopAgent):
     name = "CodeAgent"
-    description = "Generates pandas Python code to execute the analysis plan using actual column names."
+    description = (
+        "Generates pandas Python code to execute the analysis plan using actual column names."
+    )
 
     async def run(self, context: AgentContext) -> AgentResult:
         llm = create_llm_provider(context.project_config)
         plan = context.inputs.get("analysis_plan", {})
-        profile = context.inputs.get("data_profile", {})
         columns = context.inputs.get("columns", [])
         dtypes = context.inputs.get("dtypes", {})
         head = context.inputs.get("head_preview", "")
@@ -184,7 +190,10 @@ class CodeAgent(BaseWorkshopAgent):
 Python code:"""
 
         try:
-            code = await llm.generate(prompt, system="You write only Python pandas code. Use exact column names from the dataset.")
+            code = await llm.generate(
+                prompt,
+                system="You write only Python pandas code. Use exact column names from the dataset.",
+            )
             code = code.strip()
             if code.startswith("```"):
                 lines = code.splitlines()
@@ -295,10 +304,17 @@ Provide a structured JSON response with:
 Return ONLY valid JSON."""
 
         try:
-            raw = await llm.generate(prompt, system="You are a data storytelling expert. Output ONLY valid JSON in Chinese.")
+            raw = await llm.generate(
+                prompt,
+                system="You are a data storytelling expert. Output ONLY valid JSON in Chinese.",
+            )
             output = json.loads(_extract_json(raw))
         except Exception as exc:
-            output = {"summary": "解释生成失败", "error": str(exc), "raw": raw if "raw" in locals() else None}
+            output = {
+                "summary": "解释生成失败",
+                "error": str(exc),
+                "raw": raw if "raw" in locals() else None,
+            }
 
         return AgentResult(
             agent_name=self.name,

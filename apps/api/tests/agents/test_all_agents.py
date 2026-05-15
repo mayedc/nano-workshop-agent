@@ -20,7 +20,7 @@ ALL_AGENTS = [
     "PreprocessingAgent",
     "MetadataFusionAgent",
     "GoalUnderstandingAgent",
-    "WorkshopPlanningAgent",
+    "WorkshopPlannerAgent",
     "QualitativeAnalysisAgent",
     "CodingAgent",
     "ThemeExtractionAgent",
@@ -46,7 +46,7 @@ def test_all_agents_registered(registry):
 
 @pytest.mark.asyncio
 async def test_core_agents(registry):
-    for name in ["ProjectSetupAgent", "GoalUnderstandingAgent", "WorkshopPlanningAgent"]:
+    for name in ["ProjectSetupAgent", "GoalUnderstandingAgent", "WorkshopPlannerAgent"]:
         agent = registry.get(name)
         ctx = AgentContext(project_id="proj-1", goal="Test goal")
         result = await agent.run(ctx)
@@ -57,7 +57,12 @@ async def test_core_agents(registry):
 
 @pytest.mark.asyncio
 async def test_analysis_agents(registry):
-    for name in ["QualitativeAnalysisAgent", "CodingAgent", "ThemeExtractionAgent", "QuantitativeAnalysisAgent"]:
+    for name in [
+        "QualitativeAnalysisAgent",
+        "CodingAgent",
+        "ThemeExtractionAgent",
+        "QuantitativeAnalysisAgent",
+    ]:
         agent = registry.get(name)
         ctx = AgentContext(
             project_id="proj-1",

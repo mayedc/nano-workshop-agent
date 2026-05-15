@@ -74,8 +74,18 @@ class MockSTTProvider(STTProvider):
         return {
             "transcript": "[MOCK STT] This is a simulated transcript from audio.",
             "segments": [
-                {"speaker": "SPEAKER_1", "start": 0.0, "end": duration_sec / 2, "text": "Hello everyone."},
-                {"speaker": "SPEAKER_2", "start": duration_sec / 2, "end": duration_sec, "text": "Thanks for joining."},
+                {
+                    "speaker": "SPEAKER_1",
+                    "start": 0.0,
+                    "end": duration_sec / 2,
+                    "text": "Hello everyone.",
+                },
+                {
+                    "speaker": "SPEAKER_2",
+                    "start": duration_sec / 2,
+                    "end": duration_sec,
+                    "text": "Thanks for joining.",
+                },
             ],
             "language": "en",
         }

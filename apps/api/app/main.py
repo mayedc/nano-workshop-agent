@@ -5,7 +5,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.agents.mock_agents import register_mock_agents
 from app.agents.registry import agent_registry
-from app.api.routes import agent_runs, analyze, assets, evidence, exports, feedback, health, projects, templates, workflows
+from app.api.routes import (
+    agent_runs,
+    analyze,
+    assets,
+    evidence,
+    exports,
+    feedback,
+    health,
+    projects,
+    templates,
+    workflows,
+    workshop_planner,
+)
 from app.core.config import settings
 from app.providers.mock import register_mock_providers
 from app.templates.loader import load_and_validate_templates
@@ -45,6 +57,7 @@ app.include_router(exports.router, prefix="/api/exports", tags=["exports"])
 app.include_router(workflows.router, prefix="/api/workflows", tags=["workflows"])
 app.include_router(analyze.router, prefix="/api", tags=["analyze"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["feedback"])
+app.include_router(workshop_planner.router, prefix="/api", tags=["workshop-planner"])
 
 
 @app.get("/api")

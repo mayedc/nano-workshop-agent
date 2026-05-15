@@ -49,3 +49,6 @@ data/
 
 # MinIO
 minio_data/
+
+# Claude Code
+.claude/settings.local.json

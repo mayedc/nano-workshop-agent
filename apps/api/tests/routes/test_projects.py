@@ -12,11 +12,14 @@ def _db_override(override_get_db):
 @pytest.mark.asyncio
 async def test_create_project():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post("/api/projects/", json={
-            "name": "Test Project",
-            "description": "A test project",
-            "status": "draft",
-        })
+        response = await ac.post(
+            "/api/projects/",
+            json={
+                "name": "Test Project",
+                "description": "A test project",
+                "status": "draft",
+            },
+        )
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "Test Project"

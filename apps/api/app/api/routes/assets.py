@@ -38,7 +38,11 @@ async def list_project_assets(
     return list(result.scalars().all())
 
 
-@router.post("/project/{project_id}/upload", response_model=AssetResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/project/{project_id}/upload",
+    response_model=AssetResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def upload_asset(
     project_id: str,
     file: UploadFile = File(...),
@@ -119,6 +123,7 @@ async def process_asset(
 
     # Trigger background task
     from app.tasks import process_asset_task
+
     task = process_asset_task.delay(asset_id, project_id)
 
     return {
@@ -220,7 +225,9 @@ async def update_asset(
     db_obj = await asset_service.get(db, asset_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Asset not found")
-    return await asset_service.update(db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True))
+    return await asset_service.update(
+        db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+    )
 
 
 @router.delete("/{asset_id}", status_code=status.HTTP_204_NO_CONTENT)

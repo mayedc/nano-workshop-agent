@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -61,19 +61,33 @@ class Project(Base):
     )
 
     owner: Mapped["User"] = relationship("User", back_populates="projects")
-    template: Mapped["WorkshopTemplate | None"] = relationship("WorkshopTemplate", back_populates="projects")
+    template: Mapped["WorkshopTemplate | None"] = relationship(
+        "WorkshopTemplate", back_populates="projects"
+    )
     assets: Mapped[list["Asset"]] = relationship("Asset", back_populates="project")
     evidence: Mapped[list["Evidence"]] = relationship("Evidence", back_populates="project")
     codes: Mapped[list["Code"]] = relationship("Code", back_populates="project")
     themes: Mapped[list["Theme"]] = relationship("Theme", back_populates="project")
-    requirements: Mapped[list["Requirement"]] = relationship("Requirement", back_populates="project")
+    requirements: Mapped[list["Requirement"]] = relationship(
+        "Requirement", back_populates="project"
+    )
     agent_runs: Mapped[list["AgentRun"]] = relationship("AgentRun", back_populates="project")
     exports: Mapped[list["ExportRecord"]] = relationship("ExportRecord", back_populates="project")
-    feedback: Mapped[list["ExpertFeedback"]] = relationship("ExpertFeedback", back_populates="project")
-    questionnaire_results: Mapped[list["QuestionnaireResult"]] = relationship("QuestionnaireResult", back_populates="project")
-    design_insights: Mapped[list["DesignInsight"]] = relationship("DesignInsight", back_populates="project")
-    prototype_reviews: Mapped[list["PrototypeReview"]] = relationship("PrototypeReview", back_populates="project")
-    concept_designs: Mapped[list["ConceptDesign"]] = relationship("ConceptDesign", back_populates="project")
+    feedback: Mapped[list["ExpertFeedback"]] = relationship(
+        "ExpertFeedback", back_populates="project"
+    )
+    questionnaire_results: Mapped[list["QuestionnaireResult"]] = relationship(
+        "QuestionnaireResult", back_populates="project"
+    )
+    design_insights: Mapped[list["DesignInsight"]] = relationship(
+        "DesignInsight", back_populates="project"
+    )
+    prototype_reviews: Mapped[list["PrototypeReview"]] = relationship(
+        "PrototypeReview", back_populates="project"
+    )
+    concept_designs: Mapped[list["ConceptDesign"]] = relationship(
+        "ConceptDesign", back_populates="project"
+    )
 
 
 class Asset(Base):
@@ -102,9 +116,7 @@ class Evidence(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
     project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
-    asset_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("assets.id"), nullable=True
-    )
+    asset_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("assets.id"), nullable=True)
     type: Mapped[str] = mapped_column(String(32), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     extra_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
@@ -122,7 +134,9 @@ class Code(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     evidence_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
-    created_by: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="codes")
@@ -186,7 +200,9 @@ class ExportRecord(Base):
     file_url: Mapped[str] = mapped_column(String(1024), nullable=False)
     config: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
-    generated_by: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+    generated_by: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
+    )
 
     project: Mapped["Project"] = relationship("Project", back_populates="exports")
 
@@ -196,7 +212,9 @@ class ExpertFeedback(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
     project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
-    reviewer_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+    reviewer_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
+    )
     target_type: Mapped[str] = mapped_column(String(32), nullable=False)
     target_id: Mapped[str] = mapped_column(String(36), nullable=False)
     action: Mapped[str] = mapped_column(String(32), nullable=False)

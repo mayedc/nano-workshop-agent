@@ -45,7 +45,9 @@ async def update_agent_run(
     db_obj = await agent_run_service.get(db, run_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Agent run not found")
-    return await agent_run_service.update(db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True))
+    return await agent_run_service.update(
+        db, db_obj=db_obj, obj_in=obj_in.model_dump(exclude_unset=True)
+    )
 
 
 @router.delete("/{run_id}", status_code=status.HTTP_204_NO_CONTENT)

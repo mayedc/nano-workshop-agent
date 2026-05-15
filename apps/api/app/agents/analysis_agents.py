@@ -12,19 +12,21 @@ class QualitativeAnalysisAgent(BaseWorkshopAgent):
         evidence_texts = [e.get("content", "") for e in evidence[:20]]
 
         prompt = (
-            f"Perform open coding on this evidence. Generate codes with evidence references.\n"
-            f"Evidence:\n" + "\n---\n".join(evidence_texts)
+            "Perform open coding on this evidence. Generate codes with evidence references.\n"
+            "Evidence:\n" + "\n---\n".join(evidence_texts)
         )
         response = await llm.generate(prompt)
 
         codes = []
         for i, ev in enumerate(evidence[:10]):
-            codes.append({
-                "code_id": f"code-{i}",
-                "name": f"code_{i}",
-                "evidence_id": ev.get("id", f"ev-{i}"),
-                "confidence": 0.85,
-            })
+            codes.append(
+                {
+                    "code_id": f"code-{i}",
+                    "name": f"code_{i}",
+                    "evidence_id": ev.get("id", f"ev-{i}"),
+                    "confidence": 0.85,
+                }
+            )
 
         return AgentResult(
             agent_name=self.name,
@@ -47,13 +49,15 @@ class CodingAgent(BaseWorkshopAgent):
         evidence = context.inputs.get("evidence", [])
         codes = []
         for i, ev in enumerate(evidence[:15]):
-            codes.append({
-                "code_id": f"c-{i}",
-                "label": f"label_{i % 5}",
-                "evidence_id": ev.get("id"),
-                "quote": ev.get("content", "")[:200],
-                "line_number": i + 1,
-            })
+            codes.append(
+                {
+                    "code_id": f"c-{i}",
+                    "label": f"label_{i % 5}",
+                    "evidence_id": ev.get("id"),
+                    "quote": ev.get("content", "")[:200],
+                    "line_number": i + 1,
+                }
+            )
 
         return AgentResult(
             agent_name=self.name,
@@ -82,8 +86,16 @@ class ThemeExtractionAgent(BaseWorkshopAgent):
         response = await llm.generate(prompt)
 
         themes = [
-            {"name": "Trust", "subthemes": ["Visual trust", "Behavioral trust"], "confidence": 0.91},
-            {"name": "Safety", "subthemes": ["Perceived safety", "Actual safety"], "confidence": 0.88},
+            {
+                "name": "Trust",
+                "subthemes": ["Visual trust", "Behavioral trust"],
+                "confidence": 0.91,
+            },
+            {
+                "name": "Safety",
+                "subthemes": ["Perceived safety", "Actual safety"],
+                "confidence": 0.88,
+            },
         ]
 
         return AgentResult(
@@ -126,7 +138,10 @@ class QuantitativeAnalysisAgent(BaseWorkshopAgent):
                 },
                 "chart_data": {
                     "bar": {"labels": ["Q1", "Q2", "Q3"], "values": [3.5, 4.1, 3.8]},
-                    "radar": {"dimensions": ["Trust", "Safety", "Usability"], "values": [3.8, 4.2, 3.5]},
+                    "radar": {
+                        "dimensions": ["Trust", "Safety", "Usability"],
+                        "values": [3.8, 4.2, 3.5],
+                    },
                 },
                 "significance_tests": [
                     {"test": "t-test", "p_value": 0.03, "significant": True},

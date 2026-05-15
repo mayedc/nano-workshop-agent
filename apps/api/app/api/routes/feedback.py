@@ -112,7 +112,7 @@ async def list_actions():
 
 async def _apply_action_side_effects(db: AsyncSession, feedback_data: dict) -> None:
     """Apply side effects of review actions on target records."""
-    from app.models import AgentRun, Code, Requirement, Theme
+    from app.models import AgentRun
     from app.services import agent_run as agent_run_service
     from app.services import code as code_service
     from app.services import requirement as requirement_service
@@ -156,7 +156,14 @@ async def _apply_action_side_effects(db: AsyncSession, feedback_data: dict) -> N
             await theme_service.update(db, db_obj=obj, obj_in={"confidence": obj.confidence})
 
     # Update related agent runs' review_status
-    if target_type in ("codes", "themes", "requirements", "insights", "concepts", "report_sections"):
+    if target_type in (
+        "codes",
+        "themes",
+        "requirements",
+        "insights",
+        "concepts",
+        "report_sections",
+    ):
         agent_name_map = {
             "codes": "CodingAgent",
             "themes": "ThemeExtractionAgent",
@@ -175,6 +182,4 @@ async def _apply_action_side_effects(db: AsyncSession, feedback_data: dict) -> N
             )
             runs = result.scalars().all()
             for run in runs:
-                await agent_run_service.update(
-                    db, db_obj=run, obj_in={"review_status": new_status}
-                )
+                await agent_run_service.update(db, db_obj=run, obj_in={"review_status": new_status})

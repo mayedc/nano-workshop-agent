@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -69,9 +67,7 @@ class WorkshopTemplateDSL(BaseModel):
         for step in steps:
             for dep in step.depends_on:
                 if dep not in ids:
-                    raise ValueError(
-                        f"step {step.id} depends on non-existent step {dep}"
-                    )
+                    raise ValueError(f"step {step.id} depends on non-existent step {dep}")
         return steps
 
     def get_step(self, step_id: int) -> WorkflowStep | None:
@@ -85,7 +81,4 @@ class WorkshopTemplateDSL(BaseModel):
         return step.depends_on if step else []
 
     def get_dependents(self, step_id: int) -> list[int]:
-        return [
-            s.id for s in self.workflow_steps
-            if step_id in s.depends_on
-        ]
+        return [s.id for s in self.workflow_steps if step_id in s.depends_on]

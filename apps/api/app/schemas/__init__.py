@@ -272,7 +272,16 @@ class ExportRecordResponse(ExportRecordBase):
 # --- Expert Feedback ---
 
 TARGET_TYPES = ["codes", "themes", "requirements", "insights", "concepts", "report_sections"]
-REVIEW_ACTIONS = ["approve", "reject", "revise", "merge", "split", "score", "comment", "request_rerun"]
+REVIEW_ACTIONS = [
+    "approve",
+    "reject",
+    "revise",
+    "merge",
+    "split",
+    "score",
+    "comment",
+    "request_rerun",
+]
 
 
 class ExpertFeedbackBase(BaseModel):
@@ -308,6 +317,7 @@ class ExpertFeedbackResponse(ExpertFeedbackBase):
 
 # --- Questionnaire Results ---
 
+
 class QuestionnaireResultBase(BaseModel):
     name: str
     respondent_count: int = 0
@@ -342,6 +352,7 @@ class QuestionnaireResultResponse(QuestionnaireResultBase):
 
 # --- Design Insight ---
 
+
 class DesignInsightBase(BaseModel):
     title: str
     description: str | None = None
@@ -373,6 +384,7 @@ class DesignInsightResponse(DesignInsightBase):
 
 
 # --- Prototype Review ---
+
 
 class PrototypeReviewBase(BaseModel):
     prototype_name: str
@@ -407,6 +419,7 @@ class PrototypeReviewResponse(PrototypeReviewBase):
 
 
 # --- Concept Design ---
+
 
 class ConceptDesignBase(BaseModel):
     name: str

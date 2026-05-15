@@ -11,7 +11,9 @@ class AudioProcessor(BaseProcessor):
         "audio/x-wav",
     }
 
-    async def process(self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any) -> ProcessingResult:
+    async def process(
+        self, file_bytes: bytes, filename: str, mime_type: str, **kwargs: Any
+    ) -> ProcessingResult:
         stt = ProviderRegistry.stt()
         llm = ProviderRegistry.llm()
         embedder = ProviderRegistry.embedding()
@@ -35,20 +37,24 @@ class AudioProcessor(BaseProcessor):
 
         evidence = []
         for seg in segments:
-            evidence.append({
-                "type": "transcript_segment",
-                "content": seg["text"],
-                "metadata": {
-                    "speaker": seg.get("speaker", "unknown"),
-                    "start": seg.get("start", 0),
-                    "end": seg.get("end", 0),
-                },
-            })
-        evidence.append({
-            "type": "sentiment_analysis",
-            "content": sentiment,
-            "metadata": {"source": "llm", "type": "audio"},
-        })
+            evidence.append(
+                {
+                    "type": "transcript_segment",
+                    "content": seg["text"],
+                    "metadata": {
+                        "speaker": seg.get("speaker", "unknown"),
+                        "start": seg.get("start", 0),
+                        "end": seg.get("end", 0),
+                    },
+                }
+            )
+        evidence.append(
+            {
+                "type": "sentiment_analysis",
+                "content": sentiment,
+                "metadata": {"source": "llm", "type": "audio"},
+            }
+        )
 
         return ProcessingResult(
             normalized_text=cleaned,
